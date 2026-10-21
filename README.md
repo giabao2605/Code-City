@@ -18,8 +18,8 @@
 - **Current gate:** `G0`
 - **Next task:** `CC-002`
 - **CC-001:** `VERIFIED`, đã [squash merge PR #2](https://github.com/giabao2605/Code-City/pull/2) vào `main` ở commit [`38d091e`](https://github.com/giabao2605/Code-City/commit/38d091e6539f524337414807a72612fcebec5748); Python/Qt/frontend dependencies và npm lock đã có, Windows hosted dependency CI PASS.
-- **CC-002:** `TODO`; chủ dự án đã cấp phép **riêng CC-002 trong prompt chuyển sang phiên triển khai mới**. Không được tự suy ra quyền cho CC-003 trở đi.
-- **Ứng dụng:** chưa có desktop UI đầy đủ, city renderer, binary hoặc installer; Windows 10/11 GUI/WebGL smoke chưa thực hiện. [Dependency matrix](docs/DEPENDENCY_MATRIX.md) và [Windows setup](docs/CC001_SETUP.md).
+- **CC-002:** `IN_PROGRESS`; [Issue #5](https://github.com/giabao2605/Code-City/issues/5), [draft PR #6](https://github.com/giabao2605/Code-City/pull/6). Đang triển khai spike Qt WebEngine + QWebChannel và kiểm thử Windows. [Hướng dẫn CC-002](docs/CC002_SPIKE.md). Chưa được chuyển sang CC-003.
+- **Ứng dụng:** có mã prototype tích hợp CC-002 trên feature branch; chưa có desktop UI đầy đủ, city renderer, binary hoặc installer; Windows 10/11 GUI/WebGL smoke chưa thực hiện. [Dependency matrix](docs/DEPENDENCY_MATRIX.md) và [Windows setup](docs/CC001_SETUP.md).
 - **Hệ điều hành mục tiêu:** Windows 10 1809+ x64 và Windows 11 x64; cần kiểm chứng qua các gate tiếp theo, không coi dependency CI là smoke test ứng dụng.
 
 ## Nguyên tắc không thương lượng

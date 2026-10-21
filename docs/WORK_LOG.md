@@ -2,6 +2,20 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-002 code spike and Windows verification initiated (unmerged)
+
+- **UTC date:** 2026-10-21; **Gate/task:** G0 / CC-002 IN_PROGRESS; Next task CC-002 until DoD is evidenced.
+- **Scope:** build Qt WebEngine with allowlisted trusted Vite static assets, QWebChannel diagnostic ping/pong + unsolicited Python event, off-the-record isolation, rejection policies and tests. No scanner/SQLite/Three renderer/standalone exe.
+- **Issue/branch/PR:** [Issue #5](https://github.com/giabao2605/Code-City/issues/5), `feature/CC-002-webengine-webchannel-spike`, [draft PR #6](https://github.com/giabao2605/Code-City/pull/6), **NOT MERGED**.
+- **Source commits:** `be3369dfd6bda02f505bbaaf390a2cc79cdb4fe0` (Python + unit tests), `ab9daef1a03025e48763aacce6c0c9d3da4b22f7` (React/Vite), `8a91db4116d4028c04dea15e1828a9dc47c84abc` (real Qt tests + Windows CI); this tracking/doc commit will be linked by the PR.
+- **Files added/changed:** `spike/*`, `tests/*`, `frontend/index.html`, `frontend/src/*`, `frontend/vite.config.ts`, `frontend/tsconfig.json`, frontend package scripts, `.github/workflows/cc002-integration.yml`, `scripts/cc002-smoke.ps1`, `docs/CC002_SPIKE.md`, README/PROGRESS/WORK_LOG. Locked Python constraints and npm lock unchanged.
+- **Dependencies:** exact CC-001 baseline retained; no packages added. No public V1 command/schema change, no ADR.
+- **Tests:** Windows hosted run [#39576528135](https://github.com/giabao2605/Code-City/actions/runs/39576528135) triggered; final status must be checked. Python protocol/security tests, `npm ci`, `npm run typecheck`, `npm run build`, real Qt WebEngine integration and governance are CI steps, not claimed PASS before logs confirm. Physical Windows 10/11 GUI smoke: NOT_RUN. Standalone packaging CC-003: NOT_RUN.
+- **Security:** designed CSP deny network, URL scheme-handler allowlist, profile request interception, restricted navigation/popup/download and file access. Network/WS/navigation outcomes require real runtime evidence; an implemented policy alone does not equal verified guarantee.
+- **IPC:** diagnostic envelope validation/unit tests and real WebChannel E2E included; actual JavaScript→Python→JavaScript success remains pending CI evidence.
+- **Acceptance:** A01–A18 remain NOT_RUN; do not treat spike tests as final product acceptance.
+- **Risk / next:** review Windows Qt offscreen integration logs, fix real failures, document CI pass/fail, run governance on final PR head; owner alone decides merge. Do not start CC-003.
+
 ## 2026-10-21 — Documentation handoff guard verified in PR #4
 
 - **Gate/task:** G0, governance correction for CC-002 handoff. CC-001 VERIFIED; CC-002 TODO (authorized in new task prompt, implementation not started). No G1 unlock.

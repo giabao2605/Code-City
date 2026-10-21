@@ -12,14 +12,14 @@
 - **Next task:** `CC-002`
 - **Updated (UTC):** `2026-10-21`
 - **Authorization:** `G0_CC-002_APPROVED` (chủ dự án đã gửi prompt cấp phép thực hiện riêng CC-002 trong phiên triển khai mới ngày 2026-10-21; CC-002 chưa bắt đầu code; CC-003 trở đi chưa được cấp phép).
-- **Ghi chú:** CC-001 đã merge PR #2 (commit `38d091e`) và VERIFIED, có lockfiles và Windows hosted dependency checks. CC-002 là task kế tiếp và đã có lệnh cấp phép riêng trong prompt phiên mới, nhưng vẫn TODO vì chưa triển khai. Chưa có mã ứng dụng, benchmark hoặc Windows application smoke.
+- **Ghi chú:** CC-001 VERIFIED/merged. CC-002 đã bắt đầu trên feature branch và draft PR #6: code Qt WebEngine/QWebChannel + static React/Vite, unit/security/Windows integration CI đang được kiểm chứng. Chưa có benchmark, standalone exe hoặc physical Windows 10/11 GUI smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
 
 | Gate | Trạng thái | Exit evidence | Ghi chú |
 |---|---|---|---|
-| G0 | IN_PROGRESS | - | CC-001 VERIFIED; CC-002 TODO đã được cấp quyền trong phiên mới; CC-003 đến CC-005 vẫn TODO/chưa cấp phép |
+| G0 | IN_PROGRESS | - | CC-001 VERIFIED; CC-002 IN_PROGRESS (Issue #5/PR #6); CC-003 đến CC-005 vẫn TODO/chưa cấp phép |
 | G1 | LOCKED | - | Desktop shell + scanner (10% + 20%); chưa mở gate |
 | G2 | LOCKED | - | Persistence + snapshots (15%); chưa mở gate |
 | G3 | LOCKED | - | Layout ổn định + city data contract (12% trong nhóm layout/renderer); chưa mở gate |
@@ -36,7 +36,7 @@
 | Task | Gate | Nội dung từ Master Plan | Trạng thái | Evidence | Ghi chú |
 |---|---|---|---|---|---|
 | CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | VERIFIED | https://github.com/giabao2605/Code-City/pull/2 | DoD dependency: Windows Server 2022 Python/Qt imports, pip check, npm ci from committed lock, npm ls, toolchain PASS; governance CI PASS; chủ dự án cho phép merge; physical Windows smoke là task G0/G7 sau |
-| CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | TODO | - | Chưa bắt đầu |
+| CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | IN_PROGRESS | https://github.com/giabao2605/Code-City/pull/6 | Qt/React/QWebChannel/security prototype, tests và Windows CI đang review; chưa có physical Win10/11 GUI smoke hoặc kết luận VERIFIED |
 | CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | TODO | - | Chưa bắt đầu |
 | CC-004 | G0 | Tạo fixture generator 500/1k/5k/10k files; ghi rõ CPU/GPU/RAM/SSD/resolution/Windows của máy benchmark. | TODO | - | Chưa bắt đầu |
 | CC-005 | G0 | Chốt chiến lược path containment/TOCTOU trên Windows, file limits và scan error semantics qua test nhỏ; viết ADR nếu đổi quyết định. | TODO | - | Chưa bắt đầu |
@@ -108,7 +108,7 @@
 
 ## 5. Blockers và rủi ro mở
 
-- **Chưa xác định blocker kỹ thuật đã kiểm chứng cho CC-002.** G0 đã bắt đầu từ CC-001; các rủi ro Qt WebEngine packaging, Windows 10, GPU/performance, license và TOCTOU vẫn **chưa kiểm chứng**, không được đánh dấu đã giải quyết.
+- **CC-002 IN_PROGRESS:** đang xác minh chạy Qt WebEngine/QWebChannel thực tế trên hosted Windows, đặc biệt custom URL scheme và CSP. Chưa có bằng chứng physical Win10/11, không khẳng định hoàn thành; các rủi ro packaging, GPU, license và TOCTOU thuộc gate/task sau.
 - **Điều kiện bắt đầu:** CC-001 đã merge. Chủ dự án đã cấp lệnh riêng cho CC-002 trong prompt phiên triển khai mới ngày 2026-10-21. Trước khi code phải xác minh tài liệu đồng bộ trên `main` và DoR; không tự bắt đầu CC-003.
 - **Thay đổi kiến trúc hoặc scope:** phải có ADR, cập nhật Master Plan (version mới), cập nhật PROGRESS và ghi WORK_LOG trước khi code theo quyết định mới.
 
