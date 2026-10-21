@@ -2,7 +2,7 @@
 
 > **Tài liệu điều hành duy nhất (source of truth) cho việc xây dựng Code City V1.**
 >
-> **Phiên bản:** 1.0.0 · **Ngày lập và rà soát:** 2026-10-21 · **Trạng thái:** Planning baseline, CHƯA triển khai code · **Nền tảng:** Windows 10 (1809+) / Windows 11 x64.
+> **Phiên bản:** 1.0.1 · **Ngày lập và rà soát:** 2026-10-21 · **Trạng thái:** Planning baseline, CHƯA triển khai code · **Nền tảng:** Windows 10 (1809+) / Windows 11 x64.
 >
 > **Quy tắc:** Không bắt đầu một hạng mục nếu chưa thỏa điều kiện đầu vào (DoR); không đánh dấu hoàn thành nếu chưa có bằng chứng nghiệm thu (DoD). Mọi thay đổi ảnh hưởng scope/kiến trúc/tiêu chí phải cập nhật tài liệu này trước khi triển khai.
 
@@ -76,7 +76,7 @@ React không có quyền chọn arbitrary path để mở. Không load file HTML
 
 ## 4. Hợp đồng dữ liệu và nhận dạng
 
-- **Project:** UUID được tạo khi lần đầu mở canonical root; project không phụ thuộc .git. Root được lưu ở AppData. Nếu di chuyển/đổi tên root, V1 coi là project mới (không tự ghép lịch sử).
+- **Project:** UUID được tạo khi lần đầu mở canonical root; project không phụ thuộc .git. Lưu cả canonicalRoot để hiển thị và canonicalRootKey (casefold/normalized) để UNIQUE lookup trên Windows; nếu hai đường dẫn có key trùng nhưng thực thể khác thì báo collision. Root được lưu ở AppData. Nếu di chuyển/đổi tên root, V1 coi là project mới (không tự ghép lịch sử).
 - **File identity:** khóa logic dựa trên project UUID + normalized relative path (dấu /, casefold cho Windows), tạo opaque fileKey ổn định; giữ relPath gốc để hiển thị. Casefold/Unicode collision phải phát hiện và báo lỗi, không âm thầm ghi đè. Rename = deleted + added.
 - **Metadata:** fileKey, name, relPath, relPathNorm, parentRelPath, extension, language, lineCount, sizeBytes, mtimeNs, modifiedAtUtc, contentHash.
 - **Hash:** streaming BLAKE2b-256 (32 bytes) [D, tăng độ dài so với ví dụ BLAKE2b-128 trong [R]]; so sánh hash là chuẩn phân loại modified, không chỉ mtime/size.
@@ -91,7 +91,7 @@ React không có quyền chọn arbitrary path để mở. Không load file HTML
 **9 ignored directory names:** .git; .venv; venv; node_modules; __pycache__; dist; build; .next; .idea. So sánh case-insensitive, prune trước khi descend. V1 không parse .gitignore vì sản phẩm không phụ thuộc Git; file ngoài extension được hỗ trợ không thành building.
 
 **Pipeline và giới hạn:**
-1. QFileDialog lấy root, kiểm tra tồn tại/là folder; resolve(strict=True). V1 từ chối root là symlink/junction; ghi lý do để người dùng chọn đường dẫn thực.
+1. QFileDialog lấy root, kiểm tra tồn tại/là folder trên ổ local; resolve(strict=True). V1 từ chối root là symlink/junction; UNC/network share nằm ngoài cam kết offline V1 (phát hiện và báo unsupported, kiểm tra cả mapped network drives tại G0); ghi lý do để người dùng chọn đường dẫn thực.
 2. Iterative os.scandir; sắp xếp deterministic theo normalized relative path; skip symlink và junction (kể cả trỏ vào trong root); chỉ regular files.
 3. Trước khi đọc, resolve và kiểm tra containment; đọc binary streaming từng chunk (đề xuất 1 MiB), đếm LOC + hash một lượt; stat trước/sau, retry tối đa một lần nếu biến động.
 4. Discovery/reading trong worker ngoài GUI thread; giới hạn concurrency ban đầu 2–4, có bounded queue; sort kết quả trước diff/layout.
@@ -113,7 +113,7 @@ React không có quyền chọn arbitrary path để mở. Không load file HTML
 **Vị trí:** QStandardPaths.AppDataLocation của Code City (local per-user), tuyệt đối không tạo .codecity/DB trong project được scan. Bật foreign_keys, WAL (chỉ local disk), busy_timeout; migration theo PRAGMA user_version, backup khi nâng schema.
 
 **Các bảng tối thiểu:**
-- projects(id UUID PK, canonical_root UNIQUE, display_name, created_at, last_opened_at)
+- projects(id UUID PK, canonical_root, canonical_root_key UNIQUE, display_name, created_at, last_opened_at)
 - snapshots(id PK, project_id FK, scanned_at_utc, total_files, total_folders, total_languages, total_lines, duration_ms, scanner_version, layout_version)
 - snapshot_files(snapshot_id + file_key PK, rel_path, rel_path_norm UNIQUE trong snapshot, parent, name, extension, language, lines, bytes, mtime_ns, content_hash)
 - snapshot_changes(snapshot_id + file_key + change_type PK, previous_snapshot_id, rel_path, change_type IN added/modified/deleted)
@@ -142,7 +142,7 @@ React không có quyền chọn arbitrary path để mở. Không load file HTML
 
 **Building mapping (giá trị khởi điểm cần visual tuning, không phải dữ liệu nghiên cứu):**
 - height = clamp(2.5 + 3.0 × log2(lines + 1), 2.5, 60).
-- area = clamp(6 + 2.5 × log2(sizeKB + 1), 6, 42); aspect = 0.80 + 0.45 × hash01(relPath); width/depth = sqrt(area × aspect) / sqrt(area ÷ aspect), cuối cùng clamp trong ô 7×7.
+- area = clamp(6 + 2.5 × log2(sizeKB + 1), 6, 42); aspect = 0.80 + 0.45 × hash01(relPath); width = sqrt(area × aspect); depth = sqrt(area ÷ aspect); clamp từng chiều ≤7 để luôn nằm trong ô 7×7.
 - Language dùng palette cố định versioned; recency = exp(−max(ageHours,0)/72) tại thời điểm render; added/modified/selected có accent riêng; legend và renderer đọc cùng palette.
 - Metrics thay đổi chỉ ảnh hưởng height/footprint/glow, không ảnh hưởng tọa độ.
 
@@ -390,7 +390,9 @@ Code-City/
 9. **Packaging:** standalone là mục tiêu, không đồng nhất “.exe” với “single physical file”; smoke máy sạch là bắt buộc.
 10. **Performance:** không biến dự đoán thành kết quả; đặt budget A16 có nhãn [P] và máy chuẩn G0.
 11. **Windows:** Qt 6.12 chính thức hỗ trợ Win10 1809+ và là dòng cuối cho Win10 [V], nhưng hỗ trợ thực tế Code City chỉ được claim sau smoke.
-12. **GitHub:** repo đang trống; commit này chỉ là planning docs, chưa có mã nguồn, CI hoặc ứng dụng.
+12. **GitHub:** repo đang trống khi bắt đầu; commit planning docs không bao gồm mã nguồn, CI hoặc ứng dụng.
+13. **Windows project identity:** SQLite UNIQUE mặc định không tự casefold canonical root; bổ sung canonical_root_key để tránh duplicate project khi chọn lại cùng thư mục với khác kiểu chữ.
+14. **Local-first:** giới hạn rõ cam kết V1 cho thư mục trên ổ local; UNC/mapped network share phải được phát hiện, không giả định chúng hoạt động offline.
 
 **Chưa xác minh bằng chạy thực tế:** exact dependency compatibility, Windows Qt WebEngine packaging, TOCTOU hardening, FPS/memory/scan budgets, license distribution, Win10/Win11 smoke. Các mục này là G0/G6/G7 blockers, không phải bằng chứng hoàn thành.
 
