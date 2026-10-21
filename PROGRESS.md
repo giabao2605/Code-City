@@ -13,7 +13,7 @@
 - **Updated (UTC):** `2026-10-21`
 - **Authorization:** `DOCS_ONLY` (đã được yêu cầu quản lý tiến độ; **chưa có lệnh bắt đầu lập trình Code City**).
 - **Ghi chú:** Repo chỉ có tài liệu lập kế hoạch và quản trị. Chưa có mã ứng dụng, build, benchmark, kiểm thử Windows hoặc artifact.
-- **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md).
+- **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
 
