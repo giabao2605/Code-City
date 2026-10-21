@@ -2,6 +2,15 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-001 Windows first verification and dependency-tree correction
+
+- **GitHub Actions:** [run #39570639921](https://github.com/giabao2605/Code-City/actions/runs/39570639921), Windows Server 2022 x64, job `cc001-windows-dependencies`, **SUCCESS**.
+- **PASS:** `python --version` 3.12.10 + 64-bit assertion; `pip install --only-binary=:all: -r requirements.txt -c python-constraints.txt`; `python -m pip check` (No broken requirements found); `import PySide6; from PySide6 import QtWebEngineWidgets, QtWebChannel`; Qt version 6.12.0; Node 24.22.0/npm 11.19.1; `npm ci --no-audit --no-fund`; `npm ls --all`; `npm run verify:toolchain`; npm lock v3; `node scripts/verify_governance.mjs`.
+- **Evidence-derived correction:** pip resolved six Python packages, not four. Also pin `PySide6_WebEngine==6.12.0.140` and `PySide6_Pdf==6.12.0.140`; WebEngine bindings reside in dedicated 131.7 MB wheel. `frontend/package-lock.json` was generated from npm 11.19.1 and committed by GitHub Actions bot (commit `ebab98d3a1f16fc872086096b2ac3c3141e4a4d5`), 57 entries / lock v3.
+- **Hardening:** move npm engine-strict to `frontend/.npmrc`, remove one-time Actions lock generator after lock exists, CI contents permission becomes read-only. Follow-on run must confirm clean install using committed lock.
+- **NOT_RUN:** physical Windows 10 1809+/Windows 11 GUI smoke, offline app runtime, WebEngine page/process, standalone packaging, and A01–A18.
+- **Risks:** official Python 3.12.10 installer is behind security-source 3.12.15; Github Actions action versions currently use deprecated Node 20-based actions shim (warning, despite successful run); revisit under CI hardening. **Next:** PR checks and reviewer approval before merge; never CC-002 without authorization.
+
 ## 2026-10-21 — CC-001 dependency baseline initiated (feature branch)
 
 - **Gate/task:** G0 / CC-001 IN_PROGRESS; authorized by owner; issue [#1](https://github.com/giabao2605/Code-City/issues/1).

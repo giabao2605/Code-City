@@ -29,7 +29,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip list --format=freeze
 ```
 
-The constraints pin the direct and three transitive PySide6 distributions to 6.12.0; only binary wheels are allowed. A clean `pip check` and imports do not prove a real Qt window launches.
+The constraints pin the direct and five transitive PySide6 distributions to 6.12.0; only binary wheels are allowed. A clean `pip check` and imports do not prove a real Qt window launches.
 
 ## Fresh npm environment
 

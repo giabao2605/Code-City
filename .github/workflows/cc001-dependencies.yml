@@ -15,7 +15,7 @@ on:
       - ".github/workflows/cc001-dependencies.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   cc001-windows-dependencies:
@@ -50,14 +50,6 @@ jobs:
           npm --version
           if ((node --version) -ne "v24.22.0") { throw "Wrong Node version" }
           if ((npm --version) -ne "11.19.1") { throw "Wrong npm version" }
-      - name: Bootstrap npm lock on first branch push only
-        if: github.event_name == 'push'
-        shell: pwsh
-        working-directory: frontend
-        run: |
-          if (-not (Test-Path package-lock.json)) {
-            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          }
       - name: Clean npm install and dependency tree
         shell: pwsh
         working-directory: frontend
@@ -69,16 +61,3 @@ jobs:
       - name: Governance
         shell: pwsh
         run: node scripts/verify_governance.mjs
-      - name: Commit generated npm lock to feature branch (first run only)
-        if: github.event_name == 'push'
-        shell: pwsh
-        run: |
-          git add frontend/package-lock.json
-          if (git diff --cached --quiet) {
-            Write-Host "Lockfile already checked in"
-          } else {
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "chore(CC-001): capture npm 11 lock from Windows dependency check"
-            git push origin "HEAD:feature/CC-001-dependency-lock"
-          }

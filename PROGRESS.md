@@ -35,7 +35,7 @@
 
 | Task | Gate | Nội dung từ Master Plan | Trạng thái | Evidence | Ghi chú |
 |---|---|---|---|---|---|
-| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | IN_PROGRESS | - | Issue #1; dependency install và Windows validation đang chờ bằng chứng |
+| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | IN_PROGRESS | https://github.com/giabao2605/Code-City/actions/runs/39570639921 | Windows hosted dependency test PASS; PR and committed-lock rerun pending; no physical Win10/11 smoke |
 | CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | TODO | - | Chưa bắt đầu |
 | CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | TODO | - | Chưa bắt đầu |
 | CC-004 | G0 | Tạo fixture generator 500/1k/5k/10k files; ghi rõ CPU/GPU/RAM/SSD/resolution/Windows của máy benchmark. | TODO | - | Chưa bắt đầu |
