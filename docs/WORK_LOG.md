@@ -2,6 +2,14 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — Documentation handoff guard verified in PR #4
+
+- **Gate/task:** G0, governance correction for CC-002 handoff. CC-001 VERIFIED; CC-002 TODO (authorized in new task prompt, implementation not started). No G1 unlock.
+- **Issue / PR:** [Issue #3](https://github.com/giabao2605/Code-City/issues/3), [PR #4](https://github.com/giabao2605/Code-City/pull/4) (OPEN at this checkpoint; not merged). Branch `docs/G0-cc002-handoff-consistency`; source commit `c149398236d1685d681e74570ca40b26925c3beb`, regression test commit `21a629713a1bd936206ee2ed37e6484bf3480c65`.
+- **Tests PASS:** [GitHub Actions governance run #39574386673](https://github.com/giabao2605/Code-City/actions/runs/39574386673) on Ubuntu: `node scripts/verify_governance.mjs` passes with consistent README/PROGRESS; intentional README Next task replacement with `CC-999` is rejected with expected error `README Next task differs from PROGRESS`. `git restore README.md` follows in regression step. Previous PR run [#39574156275](https://github.com/giabao2605/Code-City/actions/runs/39574156275) also PASSED the positive validator.
+- **Tests NOT_RUN:** Qt/WebEngine ping-pong, GUI/Windows hardware smoke, network isolation, 3D, packaging, scanner, A01–A18. PR contains only governance docs/script/workflow changes.
+- **Risk/next:** required checks must be revalidated on final PR head after this log addition; owner review/merge is needed before CC-002 agent can proceed. Do not merge autonomously or implement CC-002 in this docs PR.
+
 ## 2026-10-21 — Correction: G0/CC-002 handoff documents drifted after CC-001 merge
 
 - **Mục tiêu / gate:** sửa lỗi đồng bộ trạng thái, không triển khai mã CC-002. Issue [#3](https://github.com/giabao2605/Code-City/issues/3). Main khi phát hiện: `38d091e6539f524337414807a72612fcebec5748` ([PR #2](https://github.com/giabao2605/Code-City/pull/2) đã squash merge).
