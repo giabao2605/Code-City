@@ -2,6 +2,16 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-001 PR and read-only Windows CI checkpoint
+
+- **Task / status:** G0 / CC-001 **IN_PROGRESS**, next task CC-001 pending owner PR review/approval, not CC-002. PR [#2](https://github.com/giabao2605/Code-City/pull/2) open into main, **not merged**. Branch `feature/CC-001-dependency-lock`.
+- **Verification evidence:** [Windows runner read-only locked reinstallation #39571168925](https://github.com/giabao2605/Code-City/actions/runs/39571168925) **SUCCESS**; [PR Windows dependencies #39571280503](https://github.com/giabao2605/Code-City/actions/runs/39571280503) **SUCCESS**; [PR required governance #39571280882](https://github.com/giabao2605/Code-City/actions/runs/39571280882) `plan-progress-consistency` **SUCCESS**. Pull Request review showed `mergeable_state=clean` before this final evidence update. `node scripts/verify_governance.mjs` PASS within Windows CI.
+- **Test commands (Windows Server 2022 x64):** Python 3.12.10/64-bit assertion PASS; `pip install --only-binary=:all: -r requirements.txt -c python-constraints.txt` PASS; `python -m pip check` PASS; PySide6 WebEngineWidgets and WebChannel import / Qt 6.12.0 PASS; Node/npm 24.22.0/11.19.1 assertions PASS; `npm ci --no-audit --no-fund` from committed npm lock PASS; `npm ls --all` PASS; `npm run verify:toolchain` PASS; npm lock v3 assertion PASS; governance PASS.
+- **Changed files in CC-001 PR:** `requirements.txt`, `python-constraints.txt`, `.python-version`, `.node-version`, `.gitignore`, `frontend/.npmrc`, `frontend/package.json`, `frontend/package-lock.json`, `docs/DEPENDENCY_MATRIX.md`, `docs/CC001_SETUP.md`, `.github/workflows/cc001-dependencies.yml`, `PROGRESS.md`, `README.md`, `docs/WORK_LOG.md`.
+- **NOT_RUN:** local standalone on physical Win10 1809+/Win11, GPU/WebGL, Qt WebEngine page/ping-pong, static Vite assets, CodeCity.exe build, benchmarks, acceptance A01–A18. These require later CC tasks; CI hosted server is not a clean consumer OS smoke.
+- **Risks/decision:** Python 3.12.10 last Windows installer vs 3.12.15 source-only security patches; monitor and seek owner agreement for patch/distribution hardening. GitHub Actions Node 20 action deprecation warning from `checkout@v4`/`setup-node@v4`/`setup-python@v5`, functional now but migration needed when hardening CI. No architecture change or ADR currently.
+- **Next:** owner reviews PR #2 and approves merge separately. Do not merge autonomously. Gate G0 still IN_PROGRESS; CC-002 is NOT authorized.
+
 ## 2026-10-21 — CC-001 Windows first verification and dependency-tree correction
 
 - **GitHub Actions:** [run #39570639921](https://github.com/giabao2605/Code-City/actions/runs/39570639921), Windows Server 2022 x64, job `cc001-windows-dependencies`, **SUCCESS**.

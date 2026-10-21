@@ -12,7 +12,7 @@
 - **Next task:** `CC-001`
 - **Updated (UTC):** `2026-10-21`
 - **Authorization:** `G0_CC-001_ONLY` (chủ dự án cho phép triển khai CC-001 ngày 2026-10-21; không cho phép CC-002 trở đi).
-- **Ghi chú:** Đang triển khai nền tảng dependency CC-001 trên feature branch. Chưa có mã ứng dụng, benchmark, hoặc Windows application smoke.
+- **Ghi chú:** CC-001 dependency locks, hosted Windows checks và PR #2 đều có bằng chứng; đang chờ owner review. Chưa có mã ứng dụng, benchmark, hoặc Windows application smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
@@ -35,7 +35,7 @@
 
 | Task | Gate | Nội dung từ Master Plan | Trạng thái | Evidence | Ghi chú |
 |---|---|---|---|---|---|
-| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | IN_PROGRESS | https://github.com/giabao2605/Code-City/actions/runs/39570639921 | Windows hosted dependency test PASS; PR and committed-lock rerun pending; no physical Win10/11 smoke |
+| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | IN_PROGRESS | https://github.com/giabao2605/Code-City/pull/2 | Windows hosted CI, npm ci from committed lock and PR governance PASS; owner review/merge approval pending; Win10/11 smoke deferred |
 | CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | TODO | - | Chưa bắt đầu |
 | CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | TODO | - | Chưa bắt đầu |
 | CC-004 | G0 | Tạo fixture generator 500/1k/5k/10k files; ghi rõ CPU/GPU/RAM/SSD/resolution/Windows của máy benchmark. | TODO | - | Chưa bắt đầu |
