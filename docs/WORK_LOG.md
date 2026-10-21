@@ -2,6 +2,16 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-001 DoD signed off for merge (owner authorization)
+
+- **Task/gate:** G0 / CC-001 becomes **VERIFIED**; G0 remains IN_PROGRESS (CC-002–CC-005 TODO). **Next task:** CC-002, not yet authorized to implement.
+- **Owner authorization:** project owner explicitly requested merge of [PR #2](https://github.com/giabao2605/Code-City/pull/2) on 2026-10-21. This entry was committed to the PR branch **before merge**; the actual merge SHA must be verified from GitHub, not assumed.
+- **Evidence (Windows Server 2022 x64):** [lock-only CI #39571168925](https://github.com/giabao2605/Code-City/actions/runs/39571168925), [latest PR dependency run #39571641134](https://github.com/giabao2605/Code-City/actions/runs/39571641134) and [required PR governance #39571641218](https://github.com/giabao2605/Code-City/actions/runs/39571641218) **PASS**. Commands: Python 3.12.10 x64 assertion, pip install with exact six-package constraints, pip check, PySide6 QtWebEngineWidgets/QtWebChannel imports (Qt 6.12.0), Node 24.22.0/npm 11.19.1 assertions, npm ci from committed v3 lockfile, npm ls --all, Vite/tsc CLIs, node scripts/verify_governance.mjs.
+- **Files in PR:** pinned Python dependencies/constraints; frontend manifest and npm-generated lock; toolchain pins; dependency matrix, Windows setup guide, read-only CI workflow; PROGRESS/WORK_LOG/README. No desktop shell, renderer, IPC spike, standalone packaging or new release.
+- **Tests NOT RUN:** Qt WebEngine window or ping/pong (CC-002), exe packaging (CC-003), physical Windows 10 1809+/Windows 11 smoke, offline app run, GPU/WebGL, acceptance A01–A18. These are **not** asserted to PASS.
+- **Residual risks:** Python 3.12.10 security patch gap vs source-only 3.12.15; Qt Windows 10 GPU/WebEngine runtime and packaging require separate proof. No architecture deviation or ADR.
+- **Next action:** merge only after governance and dependency checks rerun successfully for the new commit. Merge through protected PR, then check main contains PROGRESS VERIFIED/Next CC-002. Owner approval to merge is **not** authorization to begin CC-002.
+
 ## 2026-10-21 — CC-001 PR and read-only Windows CI checkpoint
 
 - **Task / status:** G0 / CC-001 **IN_PROGRESS**, next task CC-001 pending owner PR review/approval, not CC-002. PR [#2](https://github.com/giabao2605/Code-City/pull/2) open into main, **not merged**. Branch `feature/CC-001-dependency-lock`.

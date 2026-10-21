@@ -9,17 +9,17 @@
 - **Plan version:** `1.0.1`
 - **Phase:** `IN_DEVELOPMENT`
 - **Current gate:** `G0`
-- **Next task:** `CC-001`
+- **Next task:** `CC-002`
 - **Updated (UTC):** `2026-10-21`
-- **Authorization:** `G0_CC-001_ONLY` (chủ dự án cho phép triển khai CC-001 ngày 2026-10-21; không cho phép CC-002 trở đi).
-- **Ghi chú:** CC-001 dependency locks, hosted Windows checks và PR #2 đều có bằng chứng; đang chờ owner review. Chưa có mã ứng dụng, benchmark, hoặc Windows application smoke.
+- **Authorization:** `G0_CC-001_APPROVED` (chủ dự án đã cho phép thực hiện và merge CC-001 ngày 2026-10-21; CC-002 vẫn chưa được cho phép triển khai).
+- **Ghi chú:** CC-001 đã đáp ứng DoD phạm vi dependency với lockfiles, Windows hosted CI và PR #2 (chủ dự án đã cho phép merge); CC-002 là task kế tiếp, chưa bắt đầu. Chưa có mã ứng dụng, benchmark hoặc Windows application smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
 
 | Gate | Trạng thái | Exit evidence | Ghi chú |
 |---|---|---|---|
-| G0 | IN_PROGRESS | - | Được phép bắt đầu duy nhất CC-001; CC-002 đến CC-005 vẫn TODO |
+| G0 | IN_PROGRESS | - | CC-001 VERIFIED; CC-002 đến CC-005 vẫn TODO, chưa có quyền triển khai CC-002 |
 | G1 | LOCKED | - | Desktop shell + scanner (10% + 20%); chưa mở gate |
 | G2 | LOCKED | - | Persistence + snapshots (15%); chưa mở gate |
 | G3 | LOCKED | - | Layout ổn định + city data contract (12% trong nhóm layout/renderer); chưa mở gate |
@@ -35,7 +35,7 @@
 
 | Task | Gate | Nội dung từ Master Plan | Trạng thái | Evidence | Ghi chú |
 |---|---|---|---|---|---|
-| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | IN_PROGRESS | https://github.com/giabao2605/Code-City/pull/2 | Windows hosted CI, npm ci from committed lock and PR governance PASS; owner review/merge approval pending; Win10/11 smoke deferred |
+| CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | VERIFIED | https://github.com/giabao2605/Code-City/pull/2 | DoD dependency: Windows Server 2022 Python/Qt imports, pip check, npm ci from committed lock, npm ls, toolchain PASS; governance CI PASS; chủ dự án cho phép merge; physical Windows smoke là task G0/G7 sau |
 | CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | TODO | - | Chưa bắt đầu |
 | CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | TODO | - | Chưa bắt đầu |
 | CC-004 | G0 | Tạo fixture generator 500/1k/5k/10k files; ghi rõ CPU/GPU/RAM/SSD/resolution/Windows của máy benchmark. | TODO | - | Chưa bắt đầu |
@@ -109,7 +109,7 @@
 ## 5. Blockers và rủi ro mở
 
 - **Chưa xác định blocker kỹ thuật đã kiểm chứng**, vì chưa bắt đầu G0. Các rủi ro Qt WebEngine packaging, Windows 10, GPU/performance, license và TOCTOU đang ở mức **chưa kiểm chứng**, không được đánh dấu đã giải quyết.
-- **Điều kiện bắt đầu:** đã được chủ dự án cho phép thực hiện duy nhất G0 / CC-001 (2026-10-21).
+- **Điều kiện bắt đầu:** chủ dự án đã cho phép CC-001 và merge PR #2 (2026-10-21). Triển khai CC-002 cần lệnh riêng; chưa được cho phép.
 - **Thay đổi kiến trúc hoặc scope:** phải có ADR, cập nhật Master Plan (version mới), cập nhật PROGRESS và ghi WORK_LOG trước khi code theo quyết định mới.
 
 ## 6. Checklist mỗi lần bắt đầu / kết thúc phiên làm việc
