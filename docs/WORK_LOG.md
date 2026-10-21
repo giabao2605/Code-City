@@ -2,6 +2,14 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-002 real Windows bridge regression and same-origin Qt resource fix
+
+- **Gate/task:** G0/CC-002 remains IN_PROGRESS, PR [#6](https://github.com/giabao2605/Code-City/pull/6) draft and unmerged; next CC-002.
+- **Evidence:** [Windows run #39577058869](https://github.com/giabao2605/Code-City/actions/runs/39577058869) **FAIL** (not a mock): Vite static frontend React mounted and typecheck/build succeeded; Python protocol tests 8/8 PASS, security policy unit tests 4/4 PASS, WebEngine resource load succeeded; WebChannel bridge initialization/ping/reload failed. Browser CSP/network fetch and navigation/popup probes passed in that run, but this does not establish full isolation with active network listeners.
+- **Root cause hypothesis:** directly loading qrc WebChannel JS from the secure custom-scheme page caused cross-scheme access issues. Implemented exact `/qwebchannel.js` same-origin route backed by Qt's bundled `:/qtwebchannel/qwebchannel.js` resource; tightened CSP to same-origin only, updated negative URL tests, retest required before PASS.
+- **Test control:** headless integration now executed with 90-second subprocess timeout so failures cannot indefinitely hang CI; no sandbox or browser web-security bypass. GPU context errors recorded in hosted Windows Server logs, no physical Win10/Win11 GPU claim.
+- **Dependencies:** no stack change or added package. **Next:** verify same-origin Qt resource availability and actual ping/pong on Windows CI, fix confirmed failures; no CC-003 and no merge.
+
 ## 2026-10-21 — CC-002 code spike and Windows verification initiated (unmerged)
 
 - **UTC date:** 2026-10-21; **Gate/task:** G0 / CC-002 IN_PROGRESS; Next task CC-002 until DoD is evidenced.

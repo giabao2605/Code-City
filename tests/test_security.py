@@ -7,7 +7,7 @@ class SecurityPolicyTests(unittest.TestCase):
     def test_trusted_resources(self):
         for s in (HOME, "codecity-spike://app/assets/index-Ab12.js",
                   "codecity-spike://app/assets/index-A_b2.css",
-                  "qrc:///qtwebchannel/qwebchannel.js"):
+                  "codecity-spike://app/qwebchannel.js"):
             self.assertTrue(allowed_request(QUrl(s)), s)
 
     def test_reject_untrusted_resources(self):
@@ -18,7 +18,8 @@ class SecurityPolicyTests(unittest.TestCase):
                   "codecity-spike://app/private.txt",
                   "codecity-spike://app/assets/../secret.js",
                   "codecity-spike://app/assets/payload.svg",
-                  "qrc:///other/resource.js"):
+                  "qrc:///other/resource.js",
+                  "qrc:///qtwebchannel/qwebchannel.js"):
             self.assertFalse(allowed_request(QUrl(s)), s)
 
     def test_navigation_only_root(self):
