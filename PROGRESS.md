@@ -11,15 +11,15 @@
 - **Current gate:** `G0`
 - **Next task:** `CC-002`
 - **Updated (UTC):** `2026-10-21`
-- **Authorization:** `G0_CC-001_APPROVED` (chủ dự án đã cho phép thực hiện và merge CC-001 ngày 2026-10-21; CC-002 vẫn chưa được cho phép triển khai).
-- **Ghi chú:** CC-001 đã đáp ứng DoD phạm vi dependency với lockfiles, Windows hosted CI và PR #2 (chủ dự án đã cho phép merge); CC-002 là task kế tiếp, chưa bắt đầu. Chưa có mã ứng dụng, benchmark hoặc Windows application smoke.
+- **Authorization:** `G0_CC-002_APPROVED` (chủ dự án đã gửi prompt cấp phép thực hiện riêng CC-002 trong phiên triển khai mới ngày 2026-10-21; CC-002 chưa bắt đầu code; CC-003 trở đi chưa được cấp phép).
+- **Ghi chú:** CC-001 đã merge PR #2 (commit `38d091e`) và VERIFIED, có lockfiles và Windows hosted dependency checks. CC-002 là task kế tiếp và đã có lệnh cấp phép riêng trong prompt phiên mới, nhưng vẫn TODO vì chưa triển khai. Chưa có mã ứng dụng, benchmark hoặc Windows application smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
 
 | Gate | Trạng thái | Exit evidence | Ghi chú |
 |---|---|---|---|
-| G0 | IN_PROGRESS | - | CC-001 VERIFIED; CC-002 đến CC-005 vẫn TODO, chưa có quyền triển khai CC-002 |
+| G0 | IN_PROGRESS | - | CC-001 VERIFIED; CC-002 TODO đã được cấp quyền trong phiên mới; CC-003 đến CC-005 vẫn TODO/chưa cấp phép |
 | G1 | LOCKED | - | Desktop shell + scanner (10% + 20%); chưa mở gate |
 | G2 | LOCKED | - | Persistence + snapshots (15%); chưa mở gate |
 | G3 | LOCKED | - | Layout ổn định + city data contract (12% trong nhóm layout/renderer); chưa mở gate |
@@ -108,8 +108,8 @@
 
 ## 5. Blockers và rủi ro mở
 
-- **Chưa xác định blocker kỹ thuật đã kiểm chứng**, vì chưa bắt đầu G0. Các rủi ro Qt WebEngine packaging, Windows 10, GPU/performance, license và TOCTOU đang ở mức **chưa kiểm chứng**, không được đánh dấu đã giải quyết.
-- **Điều kiện bắt đầu:** chủ dự án đã cho phép CC-001 và merge PR #2 (2026-10-21). Triển khai CC-002 cần lệnh riêng; chưa được cho phép.
+- **Chưa xác định blocker kỹ thuật đã kiểm chứng cho CC-002.** G0 đã bắt đầu từ CC-001; các rủi ro Qt WebEngine packaging, Windows 10, GPU/performance, license và TOCTOU vẫn **chưa kiểm chứng**, không được đánh dấu đã giải quyết.
+- **Điều kiện bắt đầu:** CC-001 đã merge. Chủ dự án đã cấp lệnh riêng cho CC-002 trong prompt phiên triển khai mới ngày 2026-10-21. Trước khi code phải xác minh tài liệu đồng bộ trên `main` và DoR; không tự bắt đầu CC-003.
 - **Thay đổi kiến trúc hoặc scope:** phải có ADR, cập nhật Master Plan (version mới), cập nhật PROGRESS và ghi WORK_LOG trước khi code theo quyết định mới.
 
 ## 6. Checklist mỗi lần bắt đầu / kết thúc phiên làm việc

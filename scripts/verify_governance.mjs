@@ -12,6 +12,14 @@ const validate = function validate(master,progress,readme,requiredFiles) {
   for(const m of progress.matchAll(/^- \*\*(Plan version|Phase|Current gate|Next task|Updated \(UTC\)):\*\* `([^`]+)`/gm))metadata[m[1]]=m[2];
   check(!!version,"Missing Master Plan version");
   check(metadata["Plan version"]===version,"PROGRESS Plan version differs from MASTER_PLAN");
+  // README is an overview, not the source of truth. Its explicit status snapshot
+  // must mirror PROGRESS to prevent stale CC-xxx handoffs between agent sessions.
+  const readmeStatusSection=readme.split("## Trạng thái")[1]?.split(/\n## /)[0]||"";
+  const readmeStatus={};
+  for(const m of readmeStatusSection.matchAll(/^- \*\*(Phase|Current gate|Next task):\*\* `([^`]+)`/gm))readmeStatus[m[1]]=m[2];
+  for(const field of ["Phase","Current gate","Next task"]){
+    check(readmeStatus[field]===metadata[field],"README "+field+" differs from PROGRESS");
+  }
   check(/^\d{4}-\d{2}-\d{2}$/.test(metadata["Updated (UTC)"]||""),"Invalid progress update date");
   const planTasks=[];const planGates=[];let gate=null;
   const section=master.split("## 13. Lộ trình")[1]?.split("## 14. Quy tắc")[0]||"";

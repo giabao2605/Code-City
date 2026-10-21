@@ -12,10 +12,15 @@
 
 ## Trạng thái
 
-- **Planning baseline:** Master Plan v1.0.1, ngày 2026-10-21.
-- **G0/CC-001 đang triển khai trên feature branch.** Đã có dependency pins, Python constraints, npm lock và Windows hosted dependency checks. Chưa có mã ứng dụng, binary hoặc installer; [dependency matrix](docs/DEPENDENCY_MATRIX.md), [setup](docs/CC001_SETUP.md).
-- **Bước đang thực hiện:** G0 / CC-001: khóa phiên bản công nghệ. Các spike Qt WebEngine + QWebChannel và Windows standalone build thuộc CC-002/CC-003, chưa được thực hiện.
-- **Hệ điều hành mục tiêu:** Windows 10 1809+ x64 và Windows 11 x64; khả năng chạy thực tế phải được xác nhận bằng smoke test.
+> Đây là checkpoint ngày 2026-10-21. **[PROGRESS.md](PROGRESS.md) là nguồn sự thật** về trạng thái mới nhất. Các trường Phase/Current gate/Next task dưới đây được kiểm tra đồng bộ với PROGRESS bằng governance CI.
+
+- **Phase:** `IN_DEVELOPMENT`
+- **Current gate:** `G0`
+- **Next task:** `CC-002`
+- **CC-001:** `VERIFIED`, đã [squash merge PR #2](https://github.com/giabao2605/Code-City/pull/2) vào `main` ở commit [`38d091e`](https://github.com/giabao2605/Code-City/commit/38d091e6539f524337414807a72612fcebec5748); Python/Qt/frontend dependencies và npm lock đã có, Windows hosted dependency CI PASS.
+- **CC-002:** `TODO`; chủ dự án đã cấp phép **riêng CC-002 trong prompt chuyển sang phiên triển khai mới**. Không được tự suy ra quyền cho CC-003 trở đi.
+- **Ứng dụng:** chưa có desktop UI đầy đủ, city renderer, binary hoặc installer; Windows 10/11 GUI/WebGL smoke chưa thực hiện. [Dependency matrix](docs/DEPENDENCY_MATRIX.md) và [Windows setup](docs/CC001_SETUP.md).
+- **Hệ điều hành mục tiêu:** Windows 10 1809+ x64 và Windows 11 x64; cần kiểm chứng qua các gate tiếp theo, không coi dependency CI là smoke test ứng dụng.
 
 ## Nguyên tắc không thương lượng
 
@@ -26,4 +31,4 @@
 5. 3D dùng instancing/chunking thay vì một Mesh cho mỗi file.
 6. Đóng gói standalone Windows phải chạy trên máy sạch trước khi phát hành.
 
-> Repository này hiện là giai đoạn **lập kế hoạch**. Bắt đầu bằng [Master Plan](MASTER_PLAN.md), không tự suy đoán rằng tool đã hoàn thiện.
+> Repository đang ở **G0 / IN_DEVELOPMENT**, chưa có ứng dụng hoàn chỉnh. Đọc [PROGRESS.md](PROGRESS.md) trước khi nhận task; không dùng ghi chú lịch sử như trạng thái hiện tại.

@@ -14,7 +14,7 @@
 
 ## Luật vận hành
 
-- **Quyền bắt đầu:** chỉ được làm những gì người dùng đã cho phép. Tại baseline 2026-10-21: chỉ lập kế hoạch/quản trị tài liệu; **chưa được tự bắt đầu lập trình ứng dụng**. Khi có lệnh bắt đầu, mở G0/CC-001 theo PROGRESS, không tự nhảy gate.
+- **Quyền bắt đầu:** chỉ được làm những gì chủ dự án đã cho phép rõ ràng, đúng CC-xxx và gate. Ghi chú `DOCS_ONLY`/chưa cho phép code tại bootstrap 2026-10-21 **là trạng thái lịch sử, không phải lệnh cấm vĩnh viễn**. CC-001 đã được triển khai và merge; CC-002 được cấp phép riêng trong prompt phiên mới. Khi bắt đầu, đọc `PROGRESS.md` và lệnh mới nhất của chủ dự án, đối chiếu GitHub thực tế. `Next task` chỉ là thứ tự, không tự cấp quyền sang task kế tiếp.
 - **Một task có kiểm soát:** xác định CC-xxx và DoR trước khi sửa code. Không làm feature ngoài V1 MUST hoặc thuộc V2/V3 khi chưa có quyết định mới.
 - **Bất biến không thương lượng:** offline, không upload/execute source code, COMPLETE-only snapshot commit, stable file X/Z, không lộ nội dung source, không dùng shell=True với đường dẫn từ project.
 - **Bằng chứng trước trạng thái:** chỉ VERIFIED nếu code/test/docs/DoD có link PR hoặc commit. Acceptance PASS chỉ khi đã chạy test thực tế và lưu bằng chứng. Chưa chạy test thì phải ghi NOT_RUN/IN_PROGRESS/BLOCKED.
