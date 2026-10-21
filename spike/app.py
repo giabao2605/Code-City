@@ -58,8 +58,12 @@ class SpikeWindow(QMainWindow):
         LOG.info("Trusted frontend loadFinished=%s", ok)
         if not ok:
             LOG.error("Qt WebEngine could not load trusted static frontend")
-            QMessageBox.critical(self, "Code City spike load failed",
-                                 "The trusted frontend failed to load. Inspect the terminal log.")
+            # Non-modal to avoid freezing a headless CI test on load failures.
+            self.error_dialog = QMessageBox(QMessageBox.Icon.Critical,
+                                            "Code City spike load failed",
+                                            "Trusted frontend load failed. Inspect the terminal log.",
+                                            QMessageBox.StandardButton.Ok, self)
+            self.error_dialog.open()
 
     def reject_download(self, item):
         self.rejected_downloads += 1
