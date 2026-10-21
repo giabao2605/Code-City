@@ -16,3 +16,16 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Validate plan and progress tracking
         run: node scripts/verify_governance.mjs
+
+      - name: Reject stale README handoff metadata (negative regression test)
+        shell: bash
+        run: |
+          python3 -c 'from pathlib import Path; import re; p=Path("README.md"); s=p.read_text(encoding="utf-8"); t,n=re.subn(r"(?m)^(- \*\*Next task:\*\* `)[^`]+(`)", lambda m: m.group(1)+"CC-999"+m.group(2), s, count=1); assert n==1, "README Next task marker missing"; p.write_text(t, encoding="utf-8")'
+          if node scripts/verify_governance.mjs > /tmp/guard-readme-negative.log 2>&1; then
+            cat /tmp/guard-readme-negative.log
+            echo "FAIL: stale README state unexpectedly passed"
+            exit 1
+          fi
+          grep -Fq "README Next task differs from PROGRESS" /tmp/guard-readme-negative.log
+          git restore README.md
+          echo "PASS: stale README next task rejected as expected"
