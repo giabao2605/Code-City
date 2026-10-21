@@ -13,6 +13,10 @@ on:
     branches:
       - feature/CC-002-webengine-webchannel-spike
 
+concurrency:
+  group: cc002-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -61,7 +65,7 @@ jobs:
           QT_QPA_PLATFORM: offscreen
           QTWEBENGINE_CHROMIUM_FLAGS: --disable-gpu
         run: |
-          python -m unittest discover -s tests -p "test_webengine.py" -v
+          python scripts/cc002_ci_integration.py
       - name: Governance check
         shell: pwsh
         run: node scripts/verify_governance.mjs
