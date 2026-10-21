@@ -1,0 +1,63 @@
+name: CC-001 dependency verification
+
+on:
+  push:
+    branches:
+      - feature/CC-001-dependency-lock
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "requirements.txt"
+      - "python-constraints.txt"
+      - ".python-version"
+      - ".node-version"
+      - ".npmrc"
+      - ".github/workflows/cc001-dependencies.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cc001-windows-dependencies:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - name: Check Python and Qt bindings
+        shell: pwsh
+        run: |
+          python --version
+          python -c "import sys,struct; assert sys.version_info[:3] == (3,12,10); assert struct.calcsize('P')*8 == 64"
+          python -m pip install --only-binary=:all: -r requirements.txt -c python-constraints.txt
+          python -m pip check
+          python -c "import PySide6; from PySide6 import QtWebEngineWidgets, QtWebChannel; from PySide6.QtCore import qVersion; assert qVersion() == '6.12.0'; print('Qt', qVersion())"
+          python -m pip list --format=freeze
+      - name: Set up Node 24.22.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.22.0"
+      - name: Check Node and npm
+        shell: pwsh
+        run: |
+          node --version
+          npm --version
+          if ((node --version) -ne "v24.22.0") { throw "Wrong Node version" }
+          if ((npm --version) -ne "11.19.1") { throw "Wrong npm version" }
+      - name: Clean npm install and dependency tree
+        shell: pwsh
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm ls --all
+          npm run verify:toolchain
+          node -e "const p=require('./package-lock.json'); if(p.lockfileVersion!==3) process.exit(1); console.log('npm lock v3 OK')"
+      - name: Governance
+        shell: pwsh
+        run: node scripts/verify_governance.mjs

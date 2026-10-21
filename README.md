@@ -13,8 +13,8 @@
 ## Trạng thái
 
 - **Planning baseline:** Master Plan v1.0.1, ngày 2026-10-21.
-- **Chưa có mã nguồn ứng dụng, binary hoặc installer.** Đã thiết lập tài liệu quản trị và CI kiểm tra consistency, không phải CI sản phẩm.
-- **Bước triển khai đầu tiên:** G0 / CC-001: khóa phiên bản công nghệ và xác minh Qt WebEngine + QWebChannel + Windows standalone build.
+- **G0/CC-001 đang triển khai trên feature branch.** Đã có dependency pins, Python constraints, npm lock và Windows hosted dependency checks. Chưa có mã ứng dụng, binary hoặc installer; [dependency matrix](docs/DEPENDENCY_MATRIX.md), [setup](docs/CC001_SETUP.md).
+- **Bước đang thực hiện:** G0 / CC-001: khóa phiên bản công nghệ. Các spike Qt WebEngine + QWebChannel và Windows standalone build thuộc CC-002/CC-003, chưa được thực hiện.
 - **Hệ điều hành mục tiêu:** Windows 10 1809+ x64 và Windows 11 x64; khả năng chạy thực tế phải được xác nhận bằng smoke test.
 
 ## Nguyên tắc không thương lượng
