@@ -16,10 +16,10 @@
 
 - **Phase:** `IN_DEVELOPMENT`
 - **Current gate:** `G0`
-- **Next task:** `CC-002`
+- **Next task:** `CC-003`
 - **CC-001:** `VERIFIED`, đã [squash merge PR #2](https://github.com/giabao2605/Code-City/pull/2) vào `main` ở commit [`38d091e`](https://github.com/giabao2605/Code-City/commit/38d091e6539f524337414807a72612fcebec5748); Python/Qt/frontend dependencies và npm lock đã có, Windows hosted dependency CI PASS.
-- **CC-002:** `IN_PROGRESS`; [Issue #5](https://github.com/giabao2605/Code-City/issues/5), [draft PR #6](https://github.com/giabao2605/Code-City/pull/6). Đang triển khai spike Qt WebEngine + QWebChannel và kiểm thử Windows. [Hướng dẫn CC-002](docs/CC002_SPIKE.md). Chưa được chuyển sang CC-003.
-- **Ứng dụng:** có mã prototype tích hợp CC-002 trên feature branch; chưa có desktop UI đầy đủ, city renderer, binary hoặc installer; Windows 10/11 GUI/WebGL smoke chưa thực hiện. [Dependency matrix](docs/DEPENDENCY_MATRIX.md) và [Windows setup](docs/CC001_SETUP.md).
+- **CC-002:** `VERIFIED` trong phạm vi spike, [Issue #5](https://github.com/giabao2605/Code-City/issues/5), [PR #6](https://github.com/giabao2605/Code-City/pull/6) (**chưa merge**). Qt WebEngine/QWebChannel thực trên Windows Server 2022 và 6/6 integration tests PASS; [CI #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051), [hướng dẫn CC-002](docs/CC002_SPIKE.md). **CC-003 chưa được cấp quyền bắt đầu.**
+- **Ứng dụng:** có integration spike Qt + React/Vite + QWebChannel được kiểm thử trên hosted Windows Server 2022; chưa có desktop shell đầy đủ, 3D renderer, standalone exe hoặc installer; physical Windows 10/11 GUI/GPU smoke chưa thực hiện. [Dependency matrix](docs/DEPENDENCY_MATRIX.md) và [Windows setup](docs/CC001_SETUP.md).
 - **Hệ điều hành mục tiêu:** Windows 10 1809+ x64 và Windows 11 x64; cần kiểm chứng qua các gate tiếp theo, không coi dependency CI là smoke test ứng dụng.
 
 ## Nguyên tắc không thương lượng
