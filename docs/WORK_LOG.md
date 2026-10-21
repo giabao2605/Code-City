@@ -2,6 +2,16 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — Correction: G0/CC-002 handoff documents drifted after CC-001 merge
+
+- **Mục tiêu / gate:** sửa lỗi đồng bộ trạng thái, không triển khai mã CC-002. Issue [#3](https://github.com/giabao2605/Code-City/issues/3). Main khi phát hiện: `38d091e6539f524337414807a72612fcebec5748` ([PR #2](https://github.com/giabao2605/Code-City/pull/2) đã squash merge).
+- **Mâu thuẫn xác nhận:** `PROGRESS.md` báo G0/CC-002 TODO, CC-001 VERIFIED nhưng `README.md` còn ghi PLANNING/CC-001 đang thực hiện. `AGENTS.md` mô tả baseline DOCS_ONLY lịch sử không phân biệt với quyền ở phiên mới. `PROGRESS.md` còn lệnh 'CC-002 chưa được cấp phép', trong khi chủ dự án đã gửi prompt cấp phép CC-002 ở phiên triển khai mới.
+- **Sửa trong branch:** đồng bộ README Phase/Current gate/Next task; giải thích baseline authorization là lịch sử trong AGENTS; cập nhật Authorization/G0 note/Blockers trong PROGRESS. Bổ sung guard kiểm tra README metadata so với PROGRESS để giảm khả năng tái diễn; không sửa Master Plan/stack/schema/acceptance.
+- **Trạng thái:** CC-001 vẫn VERIFIED; CC-002 vẫn TODO (được cấp quyền nhưng chưa code); G0 IN_PROGRESS, các gate sau LOCKED; A01–A18 vẫn NOT_RUN.
+- **Tests:** `node scripts/verify_governance.mjs` và required CI `plan-progress-consistency` sẽ được kiểm tra trên PR tài liệu; ở thời điểm ghi entry này: **NOT_RUN**, không nhận bừa PASS. Không thực hiện Qt/WebEngine/Windows/GPU smoke.
+- **Risk / rollback:** thay đổi chỉ tài liệu và governance guard; rollback qua revert PR nếu validator có lỗi. GitHub PR cần review, không tự merge.
+- **Next:** sau khi docs PR đã merge và CI xanh, phiên triển khai mới xác minh HEAD và thực hiện duy nhất CC-002 theo quyền đã cấp; CC-003 không được phép tự bắt đầu.
+
 ## 2026-10-21 — CC-001 DoD signed off for merge (owner authorization)
 
 - **Task/gate:** G0 / CC-001 becomes **VERIFIED**; G0 remains IN_PROGRESS (CC-002–CC-005 TODO). **Next task:** CC-002, not yet authorized to implement.
