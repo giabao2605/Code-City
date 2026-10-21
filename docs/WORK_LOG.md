@@ -2,6 +2,13 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-002 hosted Windows E2E clean process and extra security coverage
+
+- **Evidence:** [Windows CI #39578047710](https://github.com/giabao2605/Code-City/actions/runs/39578047710) SUCCESS: five real Qt WebEngine integration tests, `REAL_WEBENGINE_PROCESS_RETURN_CODE=0`; 8 Python protocol tests PASS, 4 URL policy tests PASS, npm ci/typecheck/Vite build and governance PASS. [Second Windows CI #39578042402](https://github.com/giabao2605/Code-City/actions/runs/39578042402) and [standalone governance #39578047600](https://github.com/giabao2605/Code-City/actions/runs/39578047600) SUCCESS.
+- **Verified fix:** Qt page/profile lifetime and DeferredDelete; React static frontend, WebChannel ping/pong, Python event, reject invalid IPC, network requests, popup/navigation and reload now work in hosted Windows offscreen.
+- **Added tests pending:** test-only **active listening loopback** asserts no HTTP(S)/WS(S) TCP connection; Qt SavePage attempts an actual download and checks the profile cancellation signal. Do not count these as PASS until next CI results.
+- **Still NOT_RUN:** physical Win10 1809+/Win11 GUI/GPU smoke; standalone exe (CC-003); A01–A18. PR #6 draft/unmerged; CC-002 IN_PROGRESS until expanded tests reviewed.
+
 ## 2026-10-21 — CC-002 WebChannel E2E PASS, teardown exit still failing
 
 - **Evidence:** [Windows Server 2022 run #39577555655](https://github.com/giabao2605/Code-City/actions/runs/39577555655): actual Qt WebEngine + React + QWebChannel **5/5 integration methods report OK** after serving Qt's qwebchannel.js through same-origin handler; ping/pong, unsolicited event, negative IPC, CSP HTTP/HTTPS/WS/WSS/file fetch, external navigation/popup, reload/reconnect all exercised. Python unit 8/8, policy unit 4/4, `npm ci`/typecheck/Vite build all PASS.

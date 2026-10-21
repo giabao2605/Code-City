@@ -1,11 +1,14 @@
 """Real Qt WebEngine integration. Run after Vite build on Windows; no mocks."""
 import json
 import os
+import socket
+import threading
 import time
 import unittest
 
 from PySide6.QtCore import QCoreApplication, QEvent
 from PySide6.QtWidgets import QApplication
+from PySide6.QtWebEngineCore import QWebEnginePage
 from spike.app import SpikeWindow
 from spike.security import HOME, register_scheme
 
@@ -90,10 +93,41 @@ class WebEngineIntegration(unittest.TestCase):
             self.assertEqual(parsed["payload"]["code"], expected, f"case {index}")
 
     def test_03_csp_blocks_http_https_websockets_and_file_fetch(self):
-        # Controlled loopback: no outbound internet requests are needed.
+        # Real TEST-ONLY listening loopback endpoint, never a production server.
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(("127.0.0.1", 0))
+        server.listen(5)
+        server.settimeout(0.1)
+        port = server.getsockname()[1]
+        stop = threading.Event()
+        accepted = []
+
+        def receiver():
+            while not stop.is_set():
+                try:
+                    client, _ = server.accept()
+                except socket.timeout:
+                    continue
+                except OSError:
+                    return
+                accepted.append(True)
+                client.close()
+
+        listener = threading.Thread(target=receiver, daemon=True)
+        listener.start()
+        try:
+            self.probe_network(port)
+            time.sleep(0.3)
+            self.assertEqual(accepted, [], "Blocked WebEngine reached listening TCP endpoint")
+        finally:
+            stop.set()
+            server.close()
+            listener.join(timeout=2)
+
+    def probe_network(self, port):
         probes = [
-            "http://127.0.0.1:49401/no-network",
-            "https://127.0.0.1:49401/no-network",
+            f"http://127.0.0.1:{port}/no-network",
+            f"https://127.0.0.1:{port}/no-network",
             "file:///C:/Windows/win.ini",
         ]
         for index, url in enumerate(probes):
@@ -105,7 +139,7 @@ class WebEngineIntegration(unittest.TestCase):
         for index, scheme in enumerate(("ws", "wss")):
             key = f"__ccSocket{index}"
             self.js(f"window.{key}='pending';"
-                    f"try {{ const socket=new WebSocket('{scheme}://127.0.0.1:49401/ws');"
+                    f"try {{ const socket=new WebSocket('{scheme}://127.0.0.1:{port}/ws');"
                     f"socket.onopen=()=>window.{key}='ALLOWED';"
                     f"socket.onerror=()=>window.{key}='blocked';"
                     f"}} catch(e) {{ window.{key}='blocked'; }}")
@@ -121,7 +155,14 @@ class WebEngineIntegration(unittest.TestCase):
         result = self.js("window.open('https://example.invalid/popup','_blank') === null")
         self.assertTrue(result)
 
-    def test_05_reload_and_reconnect(self):
+    def test_05_download_policy_cancels_real_request(self):
+        # Native page-save action should emit downloadRequested; profile cancels it.
+        before = self.window.rejected_downloads
+        self.window.page.triggerAction(QWebEnginePage.WebAction.SavePage)
+        self.assertTrue(spin(lambda: self.window.rejected_downloads > before, 8),
+                        "Hosted WebEngine did not emit downloadRequested")
+
+    def test_06_reload_and_reconnect(self):
         previous_seq = self.window.bridge.sequence
         self.window.loaded = None
         self.window.view.reload()
