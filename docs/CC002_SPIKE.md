@@ -11,7 +11,7 @@ Python spike.app -> QApplication -> QMainWindow/QWebEngineView
   -> off-the-record QWebEngineProfile (OfflineInterceptor, Assets URL handler)
   -> LockedPage + QWebChannel(DiagnosticBridge)
   -> codecity-spike://app/index.html -> React mount
-  -> qrc:///qtwebchannel/qwebchannel.js (bundled Qt resource, no CDN)
+  -> codecity-spike://app/qwebchannel.js (read by QFile from Qt's bundled :/qtwebchannel/qwebchannel.js, no CDN)
   -> JS invokes Qt QObject request(JSON string) -> Python protocol validation -> pong callback
   <- Python QObject pushed signal <- QTimer app.ready on JS clientReady()
 ```
@@ -96,8 +96,8 @@ On page/reload initialization, JavaScript subscribes to `pushed` **before** call
 
 ## Production-mode isolation and negative tests
 
-- `codecity-spike://app/index.html` and hashed `/assets/*.js|css` only, served from canonical `frontend/dist` using a guarded `QWebEngineUrlSchemeHandler` (`SecureScheme | LocalScheme`), with host, request method, query, URL path and containment restrictions. QWebChannel JS uses one exact `qrc` resource.
-- A profile-level interceptor denies other requests, including HTTP, HTTPS, ws/wss, loopback, `file:`, unknown schemes and other `qrc:` paths. No network API endpoint is opened.
+- `codecity-spike://app/index.html` and hashed `/assets/*.js|css` only, served from canonical `frontend/dist` using a guarded `QWebEngineUrlSchemeHandler` (`SecureScheme | LocalScheme`), with host, request method, query, URL path and containment restrictions. QWebChannel JS is read from the exact Qt resource `:/qtwebchannel/qwebchannel.js` with `QFile`, then served at the exact allowlisted same-origin `/qwebchannel.js` route.
+- A profile-level interceptor denies other requests, including HTTP, HTTPS, ws/wss, loopback, `file:`, unknown schemes and every direct `qrc:` URL. No network API endpoint is opened.
 - `LockedPage.acceptNavigationRequest` allows just the mainframe home URL. `createWindow` refuses popups; JavaScript-created windows disabled; profile `downloadRequested` explicitly cancels.
 - `QWebEngineProfile` off-the-record; `LocalContentCanAccessFileUrls` and `LocalContentCanAccessRemoteUrls` disabled; clipboard access denied; HTML CSP includes `default-src 'none'`, `connect-src 'none'`, `frame-src 'none'`, `object-src 'none'`, and limits script/style to trusted origins.
 - Network negative tests use **loopback endpoints without a server**, not Internet hosts, and assert browser-side rejection for HTTP/HTTPS/WS/WSS; navigation, popup and file URL attempts are also tested. Unit policy tests include unknown schemes, non-app origins and path traversal. Rejections can happen at CSP/navigation/interceptor layers; these tests do not attribute an entire platform guarantee to one Qt API.
@@ -108,12 +108,12 @@ On page/reload initialization, JavaScript subscribes to `pushed` **before** call
 
 Windows CI: [CC-002 Actions workflow](https://github.com/giabao2605/Code-City/actions/workflows/cc002-integration.yml). Initial triggered run [#39576528135](https://github.com/giabao2605/Code-City/actions/runs/39576528135) (check the **actual** outcome before claiming PASS). Workflow runs on hosted **Windows Server 2022**, which is not Windows 10/11 physical GUI/GPU smoke. A successful `npm run build` alone does not prove Chromium/QWebChannel. `tests/test_webengine.py` instantiates real Qt WebEngine after static build and interacts with JavaScript DOM/QObject; it is **not a mock**.
 
-At documentation creation: **CI integration: PENDING**; **physical Windows 10 1809+/Windows 11 GUI smoke: NOT_RUN**; **standalone packaged exe: out of CC-002 scope / NOT_RUN**; **A01–A18: all NOT_RUN**. Update with confirmed run outcome, do not infer it from imports.
+Initial hosted Windows run [#39577058869](https://github.com/giabao2605/Code-City/actions/runs/39577058869): **FAIL** because WebChannel never connected (React mount/build/unit tests PASS); same-origin Qt-resource route under retest. Current head CI integration: **PENDING**; **physical Windows 10 1809+/Windows 11 GUI smoke: NOT_RUN**; **standalone packaged exe: out of CC-002 scope / NOT_RUN**; **A01–A18: all NOT_RUN**. Update with confirmed run outcome, do not infer it from imports.
 
 ## Troubleshooting
 
 - Blank/failed load: run `npm ci` and `npm run build` in `frontend`; inspect Python console (asset handler restricts file names/MIME).
-- Bridge missing: inspect JavaScript console and check `qrc:///qtwebchannel/qwebchannel.js` can load within scheme CSP; verify `QWebEnginePage.setWebChannel` is invoked before navigating.
+- Bridge missing: inspect JavaScript console and check `/qwebchannel.js` resolves from the Qt `:/qtwebchannel/qwebchannel.js` resource at the same application origin; verify `QWebEnginePage.setWebChannel` is invoked before navigating.
 - Wrong Python / missing WebEngine DLLs: ensure x64 Python 3.12.10, wheel constraints and `pip check`; consult `docs/CC001_SETUP.md`.
 - Headless CI fails even though unit tests pass: report `FAIL/BLOCKED`; do not substitute mock tests as proof of actual Qt WebEngine. Reproduce on physical Windows GUI and attach console logs + OS/build/GPU details.
 - Windows runtime crashes: preserve terminal log and version info; do not disable sandbox or security features.

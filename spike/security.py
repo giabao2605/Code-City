@@ -3,7 +3,7 @@ import logging
 import re
 from pathlib import Path
 
-from PySide6.QtCore import QBuffer, QByteArray, QIODevice, QUrl
+from PySide6.QtCore import QBuffer, QByteArray, QFile, QIODevice, QUrl
 from PySide6.QtWebEngineCore import (
     QWebEnginePage, QWebEngineUrlRequestInterceptor, QWebEngineUrlRequestJob,
     QWebEngineUrlScheme, QWebEngineUrlSchemeHandler,
@@ -33,14 +33,11 @@ def asset_path(url):
             url.hasQuery() or url.hasFragment()):
         return None
     path = url.path()
-    return path if path == "/index.html" or ASSET_PATH.fullmatch(path) else None
+    return path if path in ("/index.html", "/qwebchannel.js") or ASSET_PATH.fullmatch(path) else None
 
 
 def allowed_request(url):
-    if asset_path(url):
-        return True
-    return (url.scheme() == "qrc" and url.path() == "/qtwebchannel/qwebchannel.js"
-            and not url.host() and not url.hasQuery() and not url.hasFragment())
+    return bool(asset_path(url))
 
 
 def allowed_navigation(url, is_main_frame):
@@ -57,21 +54,34 @@ class Assets(QWebEngineUrlSchemeHandler):
         if job.requestMethod() != QByteArray(b"GET") or part is None:
             job.fail(QWebEngineUrlRequestJob.Error.RequestDenied)
             return
-        candidate = (self.dist / part.lstrip("/")).resolve()
-        if not candidate.is_relative_to(self.dist) or not candidate.is_file():
-            job.fail(QWebEngineUrlRequestJob.Error.UrlNotFound)
-            return
-        try:
-            # Assets are application-owned build outputs, NEVER user-scanned source.
-            data = candidate.read_bytes()
-        except OSError:
-            LOG.exception("Cannot read trusted asset")
-            job.fail(QWebEngineUrlRequestJob.Error.RequestFailed)
-            return
+        if part == "/qwebchannel.js":
+            # Read Qt's OWN bundled resource and serve it at this application's origin.
+            # Direct cross-scheme qrc script loads are not reliable from custom schemes.
+            resource = QFile(":/qtwebchannel/qwebchannel.js")
+            if not resource.open(QIODevice.OpenModeFlag.ReadOnly):
+                LOG.error("Qt qwebchannel.js resource unavailable")
+                job.fail(QWebEngineUrlRequestJob.Error.UrlNotFound)
+                return
+            data = bytes(resource.readAll())
+            resource.close()
+            mime = MIME[".js"]
+        else:
+            candidate = (self.dist / part.lstrip("/")).resolve()
+            if not candidate.is_relative_to(self.dist) or not candidate.is_file():
+                job.fail(QWebEngineUrlRequestJob.Error.UrlNotFound)
+                return
+            try:
+                # Assets are application-owned build outputs, NEVER user-scanned source.
+                data = candidate.read_bytes()
+            except OSError:
+                LOG.exception("Cannot read trusted asset")
+                job.fail(QWebEngineUrlRequestJob.Error.RequestFailed)
+                return
+            mime = MIME[candidate.suffix]
         device = QBuffer(job)
         device.setData(QByteArray(data))
         device.open(QIODevice.OpenModeFlag.ReadOnly)
-        job.reply(QByteArray(MIME[candidate.suffix]), device)
+        job.reply(QByteArray(mime), device)
 
 
 class OfflineInterceptor(QWebEngineUrlRequestInterceptor):
