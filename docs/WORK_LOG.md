@@ -2,6 +2,13 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-002 WebChannel E2E PASS, teardown exit still failing
+
+- **Evidence:** [Windows Server 2022 run #39577555655](https://github.com/giabao2605/Code-City/actions/runs/39577555655): actual Qt WebEngine + React + QWebChannel **5/5 integration methods report OK** after serving Qt's qwebchannel.js through same-origin handler; ping/pong, unsolicited event, negative IPC, CSP HTTP/HTTPS/WS/WSS/file fetch, external navigation/popup, reload/reconnect all exercised. Python unit 8/8, policy unit 4/4, `npm ci`/typecheck/Vite build all PASS.
+- **Remaining failure:** workflow process exit code 1 after unittest reported OK, so **overall CI FAIL**, CC-002 remains IN_PROGRESS. The test also exposed a spurious `loadFinished(False)` dialog from intentionally denied navigation.
+- **Follow-up code:** reorder Qt QObject parent creation to release QWebEngineView/page before off-the-record profile; flush DeferredDelete events explicitly in test teardown; suppress false load-error dialog for known blocked navigation; print test subprocess exit code for diagnosis. These changes must themselves be retested; no claim yet that CI is green.
+- **Scope/decision:** no dependencies changed, no security downgrade, no ADR or CC-003. Physical Win10/Win11 GUI smoke NOT_RUN; A01–A18 NOT_RUN; PR #6 remains unmerged.
+
 ## 2026-10-21 — CC-002 real Windows bridge regression and same-origin Qt resource fix
 
 - **Gate/task:** G0/CC-002 remains IN_PROGRESS, PR [#6](https://github.com/giabao2605/Code-City/pull/6) draft and unmerged; next CC-002.

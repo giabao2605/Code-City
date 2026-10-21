@@ -4,6 +4,7 @@ import os
 import time
 import unittest
 
+from PySide6.QtCore import QCoreApplication, QEvent
 from PySide6.QtWidgets import QApplication
 from spike.app import SpikeWindow
 from spike.security import HOME, register_scheme
@@ -36,6 +37,8 @@ class WebEngineIntegration(unittest.TestCase):
         cls.window.close()
         spin(lambda: not cls.window.isVisible(), 4)
         cls.window.deleteLater()
+        # processEvents() alone does not guarantee DeferredDelete events are sent.
+        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
         QApplication.processEvents()
 
     def js(self, source, timeout=10):

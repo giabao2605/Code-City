@@ -11,4 +11,5 @@ except subprocess.TimeoutExpired:
     print("FAIL: real WebEngine integration exceeded 90 seconds on hosted CI; "
           "do NOT count imports/mocks as an integration PASS.", file=sys.stderr, flush=True)
     sys.exit(124)
+print(f"REAL_WEBENGINE_PROCESS_RETURN_CODE={completed.returncode}", flush=True)
 sys.exit(completed.returncode)

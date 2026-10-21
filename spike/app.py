@@ -25,6 +25,8 @@ class SpikeWindow(QMainWindow):
         self.setWindowTitle("Code City | CC-002 Integration Spike")
         self.resize(850, 610)
 
+        # QObject ownership order matters: delete view/page BEFORE the profile.
+        self.view = QWebEngineView(self)
         # Unnamed profile is off-the-record. Keep handlers alive for entire page lifetime.
         self.profile = QWebEngineProfile(self)
         assert self.profile.isOffTheRecord(), "Production spike must not persist browsing data"
@@ -34,7 +36,6 @@ class SpikeWindow(QMainWindow):
         self.profile.installUrlSchemeHandler(b"codecity-spike", self.assets)
         self.profile.downloadRequested.connect(self.reject_download)
 
-        self.view = QWebEngineView(self)
         self.page = LockedPage(self.profile, self.view)
         self.page.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, False)
         self.page.settings().setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, False)
@@ -48,12 +49,19 @@ class SpikeWindow(QMainWindow):
         self.channel.registerObject("spike", self.bridge)
         self.page.setWebChannel(self.channel)
         self.loaded = None
+        self._last_denied_navigation = 0
         self.rejected_downloads = 0
         self.view.loadFinished.connect(self.on_loaded)
         self.view.loadStarted.connect(lambda: LOG.info("WebEngine navigation started"))
         self.view.setUrl(QUrl(HOME))
 
     def on_loaded(self, ok):
+        if not ok and self.page.denied_navigation > self._last_denied_navigation:
+            # Chromium may emit loadFinished(False) for a deliberately denied URL.
+            # This is not a failure to load our original, trusted frontend.
+            self._last_denied_navigation = self.page.denied_navigation
+            LOG.info("Expected blocked navigation, preserved trusted frontend")
+            return
         self.loaded = bool(ok)
         LOG.info("Trusted frontend loadFinished=%s", ok)
         if not ok:
