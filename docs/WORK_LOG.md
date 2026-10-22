@@ -168,3 +168,12 @@
 - **Evidence checkpoint:** code committed; Windows CI results and hardware observations must be checked and linked before calling VERIFIED. At entry creation no actual Windows fixture count, timing, GPU/SSD or display benchmark is asserted. Unit and governance PASS require final test logs.
 - **Risks:** hosted GPU/SSD/physicality UNVERIFIED; WebGL genuine 100 boxes NOT_RUN; adversarial Windows reparse-point TOCTOU reserved for CC-005. A01–A18 NOT_RUN. No scanner, SQLite, product renderer, release or G1 task implemented.
 - **Next:** open PR, inspect Windows Actions logs/artifacts, fix identified defects, sync final DoD evidence, and obtain owner review. Do not merge or start CC-005.
+
+## 2026-10-22 — CC-004 real Windows CI verification and PR #10 handoff
+
+- **Task evidence:** [PR #10](https://github.com/giabao2605/Code-City/pull/10) opened, not merged; [PR Windows CI #39715441291 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39715441291), [artifact #12398753414](https://github.com/giabao2605/Code-City/actions/runs/39715441291/artifacts/12398753414), [governance #39715441233 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39715441233). Python 3.12.10 on hosted Windows Server 2022; all 24 unit/negative tests PASS. CC-002 integration regression #39715441243 SUCCESS.
+- **Real fixtures:** 500/1000/5000/10000 supported files verified with independent SHA-256 inventory; physical files 514/1014/5014/10014; bytes 630164/1285119/6298655/12542299; generation 0.068609/0.128881/0.737388/1.451395 seconds; verification 0.358069/0.713598/3.600869/7.017022 seconds. Exact dataset digests and independent manifest hashes in docs/CC004_FIXTURES_BENCHMARK.md.
+- **Hardware observed:** hosted Windows Server 2022 build 20348; Xeon Platinum 8573C 2-core/4-thread; 15.995 GiB RAM, Hyper-V virtual display adapter; NTFS D: with NVMe bus (physical SSD UNVERIFIED), screen 1024x768, High performance power scheme. Real GPU not verified; no 1080p assertion.
+- **DoD:** CC-004 fixture generator/environment baseline VERIFIED within task scope. WebGL 100-box feasibility NOT_RUN, physical Win10/11 not tested, A01–A18 all NOT_RUN. G0 remains IN_PROGRESS, CC-005 TODO/unauthorized, G1–G8 LOCKED.
+- **Next:** recheck CI/governance on evidence-documentation commit, owner review/merge PR #10 only when final checks green; no autonomous merge or CC-005 implementation.
+

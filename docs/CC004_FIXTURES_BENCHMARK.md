@@ -75,3 +75,22 @@ The generator and verifier emit real wall-clock elapsed seconds and dataset byte
 | G0 WebGL 100 genuine boxes | NOT_RUN pending real Qt/Three.js canvas probe, never count 100 HTML divs |
 
 CC-004 VERIFIED, if achieved, is **not** G0 exit. CC-005 and G0 exit evidence remain required; G1–G8 remain LOCKED. Record actual final CI run/artifact links before marking VERIFIED. Physical hardware benchmarks and real WebGL 100-box tests cannot be fabricated from the hosted runner.
+
+
+## Verified Windows CI results (2026-10-22 UTC)
+
+**PR #10 head checkpoint:** 0c1444696b9ba2c48f3848a1583c0a7a041e6195.
+**Actual PR CI:** [run #39715441291 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39715441291), Windows Server 2022 / Python 3.12.10 x64, all **24 unittest/negative tests PASS**, all four real fixture sizes PASS, generator/checksum verifier and Windows environment capture PASS. [Evidence artifact #12398753414](https://github.com/giabao2605/Code-City/actions/runs/39715441291/artifacts/12398753414) (13 files: four manifests, eight JSON logs and environment JSON). Required governance [#39715441233 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39715441233), and CC-002 integration regression [#39715441243 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39715441243). These were observed on the head checkpoint; a later evidence-only commit requires re-running final-head CI.
+
+| Supported | Total physical | Total bytes | Generation seconds | Verification seconds | Dataset SHA-256 |
+|---:|---:|---:|---:|---:|---|
+| 500 | 514 | 630164 | 0.068609 | 0.358069 | 66895ee092c7447460e178cdd56c14e95da461343c61777d028c7e1b7fb26dab |
+| 1000 | 1014 | 1285119 | 0.128881 | 0.713598 | b27e1da6da481eee96e0cfbcd613ffed722d7f027016ae50cbe3f5ce5a470c0e |
+| 5000 | 5014 | 6298655 | 0.737388 | 3.600869 | 852b6af82ab542cd401512a611cfb63dc45822ac53eda16228b19f571f5c9035 |
+| 10000 | 10014 | 12542299 | 1.451395 | 7.017022 | f92e00a946835d86f241424f4f64bfd9ff2cdeca869951fbef5fee852acc0926 |
+
+**SHA-256 of external JSON manifest bytes**, additionally inspected in the published ZIP: 500 = 16c0c255583084bc4bb3f18047e7b55e58905da48a812b0ac606d2a56a9845c4; 1000 = 296989d62a50e83e12fb0304318d35ac5c975aeaa70abbd276377520b1ae0aa2; 5000 = 265921ab2e73da9881540cc4ae7974ca0842f69c904bafdd0e1c93f29a7df9ea; 10000 = d335b9dd07f40d396aa46fca3448aa77ff454b71f1fa2e5dd8cd6883a04be86f.
+
+**Observed Windows environment from artifact JSON** at 2026-10-22T03:11:55Z: GitHub hosted Windows Server 2022 Datacenter version 10.0.20348 (build 20348), image 20261012.333.1; Intel Xeon Platinum 8573C, 2 reported physical cores / 4 logical CPUs / 2300 MHz; RAM 15.995 GiB total, 13.521 GiB available; Microsoft Hyper-V Video adapter driver 10.0.20348.1, **physical GPU acceleration UNVERIFIED**; NTFS D: 219.983 GiB total, 219.81 GiB free, bus reported NVMe, **media type UNKNOWN and physical SSD backing UNVERIFIED**; screen 1024×768, display scale UNVERIFIED; power scheme High performance, AC/battery UNVERIFIED. Toolchain Python 3.12.10, hosted Node v22.23.3/npm 10.9.9 **observed but not used to build fixtures**; the project-wide pinned frontend 24.22.0/11.19.1 remains unchanged. On a pull_request workflow, GITHUB_SHA can identify GitHub's synthetic merge commit, not the feature head: the report records 88a6d036d633728e181199733953557838b5efdb.
+
+**Limitations:** These were one-run I/O timings, with no warm-up/cache-policy comparison, so no p50/p95 claims. The capture does not prove a physical GPU/SSD or 1080p hardware. G0 100 WebGL boxes = NOT_RUN (no actual Three.js probe); A16/A17 scanner/renderer acceptance = NOT_RUN; physical Win10/11 smoke = NOT_RUN. G0 remains IN_PROGRESS and CC-005 TODO.
