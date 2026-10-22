@@ -2,6 +2,7 @@
 import logging
 import sys
 from pathlib import Path
+from .resources import frontend_dist
 
 from PySide6.QtCore import QUrl
 from PySide6.QtWebChannel import QWebChannel
@@ -13,7 +14,7 @@ from .bridge import DiagnosticBridge
 from .security import Assets, HOME, LockedPage, OfflineInterceptor, register_scheme
 
 LOG = logging.getLogger(__name__)
-DIST = Path(__file__).resolve().parents[1] / "frontend" / "dist"
+DIST = frontend_dist()
 
 
 class SpikeWindow(QMainWindow):
@@ -22,7 +23,7 @@ class SpikeWindow(QMainWindow):
         dist = Path(dist).resolve()
         if not (dist / "index.html").is_file():
             raise FileNotFoundError(f"Missing built frontend/index.html in {dist}. Run npm run build.")
-        self.setWindowTitle("Code City | CC-002 Integration Spike")
+        self.setWindowTitle("Code City | G0 WebEngine Packaging Spike")
         self.resize(850, 610)
 
         # QObject ownership order matters: delete view/page BEFORE the profile.
