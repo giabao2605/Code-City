@@ -33,7 +33,7 @@ The chosen local project is untrusted. Other processes with access may swap file
 - `MAX_FILES=20_000`, inclusive; 20,001st supported file causes `FILE_COUNT_LIMIT`, PARTIAL. 0 supported files may COMPLETE if discovery finishes cleanly.
 - `MAX_BYTES=64*1024*1024=67,108,864` bytes, inclusive; one more byte causes `FILE_SIZE_LIMIT`, PARTIAL. Preflight **and handle size** are checked. Actual bytes read must match handle metadata; truncation/growth/mismatch → UNSTABLE/PARTIAL, excess bytes → PARTIAL immediately.
 - Up to 1 MiB per read chunk; initially 2 workers, 4 hard maximum; bounded work queue remains G1. Max one retry for instability. Reject invalid/negative/Boolean limits. Do not aggregate source contents in memory.
-- CC-004 500/1k/5k/10k **generation and verification measurements** are synthetic dataset baselines and NOT scanner throughput/A16/A17. This probe's 20k count is an isolated counter boundary test, not a real 20k-file scanner run.
+- Deterministic `after_first_chunk` hooks exercise growth and truncation while the file handle remains open; both must fail closed. CC-004 500/1k/5k/10k **generation and verification measurements** are synthetic dataset baselines and NOT scanner throughput/A16/A17. This probe's 20k count is an isolated counter boundary test, not a real 20k-file scanner run.
 
 ## Outcome and snapshot eligibility
 
@@ -60,3 +60,7 @@ CC-011 performs iterative sorted discovery and ignore; CC-012 implements V1 root
 
 ## G0 exit gap
 100 **real WebGL** rendered boxes are required by Master Plan G0. Neither CC-004 nor this filesystem-only CC-005 probe establishes that evidence. Keep **G0 IN_PROGRESS** until independently verified; do not silently implement G4 renderer.
+
+## Observed first Windows run (branch push; not final PR-head evidence)
+- [Windows CI #39718295537](https://github.com/giabao2605/Code-City/actions/runs/39718295537): SUCCESS, Python 3.12.10 x64, security **27 tests (26 pass, 1 mapped-drive SKIP)**; real symlink, junction, file substitution, streaming 64MiB boundary tested; CC-004 regression and governance passed. This result precedes the in-read mutation tests and must not be attributed to later PR heads.
+- No mapped network drive on the hosted runner, thus the integration case is NOT_RUN/SKIP; `GetDriveTypeW` policy code exists but lacks real mapped-drive exercise. Physical Win10/Win11 and G0 100-WebGL-box proof are NOT_RUN.

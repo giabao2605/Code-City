@@ -271,6 +271,26 @@ class WindowsProbeTests(unittest.TestCase):
         with self.assertRaises(FileTooLarge):
             read_probe(self.root,"hello.py",max_bytes=20,before_open=grow)
 
+    def test_truncate_after_first_read_chunk(self):
+        big = self.root/"truncation.py"
+        big.write_bytes(b"x" * 8192)
+        def truncate():
+            with big.open("r+b") as f:
+                f.truncate(0)
+        with self.assertRaises(UnstableFile):
+            read_probe(self.root,"truncation.py",chunk_size=1024,
+                       after_first_chunk=truncate)
+
+    def test_grow_after_first_read_chunk(self):
+        big = self.root/"growth.py"
+        big.write_bytes(b"x" * 8192)
+        def grow():
+            with big.open("ab") as f:
+                f.write(b"y" * 8192)
+        with self.assertRaises((UnstableFile,FileTooLarge)):
+            read_probe(self.root,"growth.py",chunk_size=1024,
+                       after_first_chunk=grow)
+
     def test_streaming_64_mib_boundary_sparse(self):
         large = self.root/"big.py"
         with large.open("wb") as f:

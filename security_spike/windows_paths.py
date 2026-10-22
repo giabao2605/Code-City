@@ -189,6 +189,7 @@ def _preflight(root: Path, parts: tuple[str, ...]) -> Path:
 
 def read_probe(root: Path, relative: str, *,
                before_open: Callable[[], None] | None = None,
+               after_first_chunk: Callable[[], None] | None = None,
                chunk_size: int = 1024 * 1024,
                max_bytes: int = MAX_BYTES) -> ReadEvidence:
     """Experimental handle-pinned streaming hash, with deterministic race hook.
@@ -241,6 +242,8 @@ def read_probe(root: Path, relative: str, *,
                 digest.update(buffer.raw[:got.value])
                 chunks += 1
                 largest = max(largest, got.value)
+                if chunks == 1 and after_first_chunk:
+                    after_first_chunk()
             end_info = _info(file_handle)
             if (total != actual_size or
                     _fingerprint(file_info) != _fingerprint(end_info) or
