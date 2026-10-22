@@ -2,6 +2,54 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-21 — CC-002 DoD verified on hosted Windows (PR unmerged)
+
+- **UTC date:** 2026-10-21, **gate/task:** G0 / CC-002 **VERIFIED** in integration spike scope. **Next task by plan:** CC-003 TODO / **NOT AUTHORIZED**; G0 remains IN_PROGRESS and G1+ LOCKED.
+- **GitHub:** [Issue #5](https://github.com/giabao2605/Code-City/issues/5), [PR #6](https://github.com/giabao2605/Code-City/pull/6) still **NOT MERGED**, branch `feature/CC-002-webengine-webchannel-spike`, final test implementation commit `39745e03bcab4e05fc74e922064c07a1b7bc34b4`; documentation status commit available on PR. No direct main commit and no bypass.
+- **Windows Server 2022 hosted CI:** [PR integration run #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051) and [branch integration run #39578508910](https://github.com/giabao2605/Code-City/actions/runs/39578508910): **SUCCESS**; real QApplication/QWebEngineView loaded built Vite React assets; `QWebChannel` JS→Python ping/Python→JS callback/independent host `app.ready` signal; requestId/malformed validation; reload; no server at production; clean Qt shutdown `REAL_WEBENGINE_PROCESS_RETURN_CODE=0`. All six integration tests PASS.
+- **Security evidence:** CSP denied HTTP, HTTPS, ws, wss and file fetch; test-only listening TCP loopback accepted **0** connections; external navigation and popup rejected; native Qt SavePage emitted downloadRequested, cancelled; untrusted URL schemes and local asset containment checked. Python protocol 8/8 PASS and URL policy tests 4/4 PASS.
+- **Frontend/dependencies:** Python 3.12.10 x64 + six pinned PySide6 distributions / `pip check` PASS; Node 24.22.0/npm 11.19.1; `npm ci --no-audit --no-fund`, TS typecheck and `vite build` PASS; npm lock and Python constraints unchanged. No external runtime CDN, TCP server, scanner or code execution.
+- **Governance:** [PR governance #39578515062](https://github.com/giabao2605/Code-City/actions/runs/39578515062) SUCCESS, `node scripts/verify_governance.mjs` PASS; README/PROGRESS are being changed to Next CC-003 in this final evidence commit and require fresh CI verification on final PR head.
+- **NOT_RUN / limitations:** real physical Windows 10 1809+/Win11 GUI/GPU smoke NOT_RUN, standalone executable and clean-machine packaging CC-003 NOT_RUN, complete app offline acceptance NOT_RUN, acceptance **A01–A18 remain NOT_RUN**. Hosted Windows offscreen `--disable-gpu` has GLES diagnostic errors but all direct IPC/DOM tests PASS. This does not prove OS network isolation/zero child-process traffic; no release security signoff claimed.
+- **Changed files:** Python spike, React TS/Vite static UI, tests, Windows workflow/PowerShell script, `docs/CC002_SPIKE.md`, PROGRESS/README/WORK_LOG. **No ADR or stack change.**
+- **Decision:** CC-002 DoD passed within spike scope, ready for owner review/merge once final CI green; do not auto-merge or start CC-003.
+
+## 2026-10-21 — CC-002 hosted Windows E2E clean process and extra security coverage
+
+- **Evidence:** [Windows CI #39578047710](https://github.com/giabao2605/Code-City/actions/runs/39578047710) SUCCESS: five real Qt WebEngine integration tests, `REAL_WEBENGINE_PROCESS_RETURN_CODE=0`; 8 Python protocol tests PASS, 4 URL policy tests PASS, npm ci/typecheck/Vite build and governance PASS. [Second Windows CI #39578042402](https://github.com/giabao2605/Code-City/actions/runs/39578042402) and [standalone governance #39578047600](https://github.com/giabao2605/Code-City/actions/runs/39578047600) SUCCESS.
+- **Verified fix:** Qt page/profile lifetime and DeferredDelete; React static frontend, WebChannel ping/pong, Python event, reject invalid IPC, network requests, popup/navigation and reload now work in hosted Windows offscreen.
+- **Added tests pending:** test-only **active listening loopback** asserts no HTTP(S)/WS(S) TCP connection; Qt SavePage attempts an actual download and checks the profile cancellation signal. Do not count these as PASS until next CI results.
+- **Still NOT_RUN:** physical Win10 1809+/Win11 GUI/GPU smoke; standalone exe (CC-003); A01–A18. PR #6 draft/unmerged; CC-002 IN_PROGRESS until expanded tests reviewed.
+
+## 2026-10-21 — CC-002 WebChannel E2E PASS, teardown exit still failing
+
+- **Evidence:** [Windows Server 2022 run #39577555655](https://github.com/giabao2605/Code-City/actions/runs/39577555655): actual Qt WebEngine + React + QWebChannel **5/5 integration methods report OK** after serving Qt's qwebchannel.js through same-origin handler; ping/pong, unsolicited event, negative IPC, CSP HTTP/HTTPS/WS/WSS/file fetch, external navigation/popup, reload/reconnect all exercised. Python unit 8/8, policy unit 4/4, `npm ci`/typecheck/Vite build all PASS.
+- **Remaining failure:** workflow process exit code 1 after unittest reported OK, so **overall CI FAIL**, CC-002 remains IN_PROGRESS. The test also exposed a spurious `loadFinished(False)` dialog from intentionally denied navigation.
+- **Follow-up code:** reorder Qt QObject parent creation to release QWebEngineView/page before off-the-record profile; flush DeferredDelete events explicitly in test teardown; suppress false load-error dialog for known blocked navigation; print test subprocess exit code for diagnosis. These changes must themselves be retested; no claim yet that CI is green.
+- **Scope/decision:** no dependencies changed, no security downgrade, no ADR or CC-003. Physical Win10/Win11 GUI smoke NOT_RUN; A01–A18 NOT_RUN; PR #6 remains unmerged.
+
+## 2026-10-21 — CC-002 real Windows bridge regression and same-origin Qt resource fix
+
+- **Gate/task:** G0/CC-002 remains IN_PROGRESS, PR [#6](https://github.com/giabao2605/Code-City/pull/6) draft and unmerged; next CC-002.
+- **Evidence:** [Windows run #39577058869](https://github.com/giabao2605/Code-City/actions/runs/39577058869) **FAIL** (not a mock): Vite static frontend React mounted and typecheck/build succeeded; Python protocol tests 8/8 PASS, security policy unit tests 4/4 PASS, WebEngine resource load succeeded; WebChannel bridge initialization/ping/reload failed. Browser CSP/network fetch and navigation/popup probes passed in that run, but this does not establish full isolation with active network listeners.
+- **Root cause hypothesis:** directly loading qrc WebChannel JS from the secure custom-scheme page caused cross-scheme access issues. Implemented exact `/qwebchannel.js` same-origin route backed by Qt's bundled `:/qtwebchannel/qwebchannel.js` resource; tightened CSP to same-origin only, updated negative URL tests, retest required before PASS.
+- **Test control:** headless integration now executed with 90-second subprocess timeout so failures cannot indefinitely hang CI; no sandbox or browser web-security bypass. GPU context errors recorded in hosted Windows Server logs, no physical Win10/Win11 GPU claim.
+- **Dependencies:** no stack change or added package. **Next:** verify same-origin Qt resource availability and actual ping/pong on Windows CI, fix confirmed failures; no CC-003 and no merge.
+
+## 2026-10-21 — CC-002 code spike and Windows verification initiated (unmerged)
+
+- **UTC date:** 2026-10-21; **Gate/task:** G0 / CC-002 IN_PROGRESS; Next task CC-002 until DoD is evidenced.
+- **Scope:** build Qt WebEngine with allowlisted trusted Vite static assets, QWebChannel diagnostic ping/pong + unsolicited Python event, off-the-record isolation, rejection policies and tests. No scanner/SQLite/Three renderer/standalone exe.
+- **Issue/branch/PR:** [Issue #5](https://github.com/giabao2605/Code-City/issues/5), `feature/CC-002-webengine-webchannel-spike`, [draft PR #6](https://github.com/giabao2605/Code-City/pull/6), **NOT MERGED**.
+- **Source commits:** `be3369dfd6bda02f505bbaaf390a2cc79cdb4fe0` (Python + unit tests), `ab9daef1a03025e48763aacce6c0c9d3da4b22f7` (React/Vite), `8a91db4116d4028c04dea15e1828a9dc47c84abc` (real Qt tests + Windows CI); this tracking/doc commit will be linked by the PR.
+- **Files added/changed:** `spike/*`, `tests/*`, `frontend/index.html`, `frontend/src/*`, `frontend/vite.config.ts`, `frontend/tsconfig.json`, frontend package scripts, `.github/workflows/cc002-integration.yml`, `scripts/cc002-smoke.ps1`, `docs/CC002_SPIKE.md`, README/PROGRESS/WORK_LOG. Locked Python constraints and npm lock unchanged.
+- **Dependencies:** exact CC-001 baseline retained; no packages added. No public V1 command/schema change, no ADR.
+- **Tests:** Windows hosted run [#39576528135](https://github.com/giabao2605/Code-City/actions/runs/39576528135) triggered; final status must be checked. Python protocol/security tests, `npm ci`, `npm run typecheck`, `npm run build`, real Qt WebEngine integration and governance are CI steps, not claimed PASS before logs confirm. Physical Windows 10/11 GUI smoke: NOT_RUN. Standalone packaging CC-003: NOT_RUN.
+- **Security:** designed CSP deny network, URL scheme-handler allowlist, profile request interception, restricted navigation/popup/download and file access. Network/WS/navigation outcomes require real runtime evidence; an implemented policy alone does not equal verified guarantee.
+- **IPC:** diagnostic envelope validation/unit tests and real WebChannel E2E included; actual JavaScript→Python→JavaScript success remains pending CI evidence.
+- **Acceptance:** A01–A18 remain NOT_RUN; do not treat spike tests as final product acceptance.
+- **Risk / next:** review Windows Qt offscreen integration logs, fix real failures, document CI pass/fail, run governance on final PR head; owner alone decides merge. Do not start CC-003.
+
 ## 2026-10-21 — Documentation handoff guard verified in PR #4
 
 - **Gate/task:** G0, governance correction for CC-002 handoff. CC-001 VERIFIED; CC-002 TODO (authorized in new task prompt, implementation not started). No G1 unlock.

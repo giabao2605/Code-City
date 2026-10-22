@@ -1,0 +1,10 @@
+:root { font-family: system-ui, sans-serif; color-scheme: dark; color: #e8edf7; background: #111827; }
+body { margin: 0; }
+main { max-width: 760px; margin: 30px auto; padding: 0 20px; }
+h1 { font-size: 1.65rem; }
+h2 { font-size: 1.1rem; }
+section { background: #1f2937; padding: 15px 20px; border-radius: 10px; margin: 14px 0; }
+button { background: #60a5fa; color: #081122; padding: 11px 20px; border: 0; border-radius: 6px; cursor: pointer; font-weight: 700; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+[role="alert"] { color: #fca5a5; white-space: pre-wrap; }
+li { overflow-wrap: anywhere; padding-bottom: 5px; }
