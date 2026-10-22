@@ -50,9 +50,15 @@ try {
     if (Test-Path $staging) { Remove-Item -LiteralPath $staging -Recurse -Force }
     New-Item -ItemType Directory -Path $work,$staging -Force | Out-Null
     Write-Host "CC003_NUITKA_BUILD_START $(Get-Date -Format o)"
+    # Nuitka 4.1.1 needs Dependency Walker to resolve Windows extension DLLs.
+    # In non-interactive CI it otherwise refuses the tool download. The pinned
+    # Nuitka version selects the specific dependencywalker.com/depends22_x64.zip.
+    # Only build-time downloads are allowed; NEVER enabled on packaged runtime.
+    # Record actual downloaded file hash for a future deterministic vendoring gate.
+    # Official reference: https://nuitka.net/user-documentation/tips.html
     # Official Nuitka PySide6 plugin handles WebEngine DLLs, process and Qt resources.
     # Data directory is application-authored, NOT a user-selected project folder.
-    & $py -m nuitka --mode=standalone --enable-plugin=pyside6 `
+    & $py -m nuitka --mode=standalone --assume-yes-for-downloads --enable-plugin=pyside6 `
         --include-data-dir="frontend/dist=frontend/dist" `
         --output-dir="$work" --output-filename="CodeCitySpike.exe" `
         --msvc=latest --report="$work\nuitka-report.xml" `

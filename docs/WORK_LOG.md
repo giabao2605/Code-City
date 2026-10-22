@@ -2,6 +2,12 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-22 — CC-003 failed Nuitka tool bootstrap, explicit build-time dependency fix
+
+- **Observed failure:** [CC-003 PR build #39709854048](https://github.com/giabao2605/Code-City/actions/runs/39709854048) FAIL on real hosted Windows Server 2022: CPython 3.12.10 x64, Qt dependencies, pinned Nuitka 4.1.1, MSVC cl14.3, npm ci/typecheck/Vite build PASS; 8 protocol, 4 security and 3 resource tests PASS; local governance PASS. Nuitka recognized PySide6 Qt WebEngine and logged that it would include QtWebEngineProcess; no standalone output produced because Windows Dependency Walker missing and a non-interactive permission prompt defaulted to No. Consumer job SKIPPED, no cross-runner evidence.
+- **Fix on feature branch:** authorize Nuitka 4.1.1's **build-time-only** `--assume-yes-for-downloads` for dependency walker (`https://dependencywalker.com/depends22_x64.zip`), preserve exact original product stack, document tool URL and unpinned downloaded binary digest as residual supply-chain concern. Must inspect new run logs; no claim of PASS. No PyInstaller fallback yet and no bypass of browser security.
+- **Progress:** CC-003 IN_PROGRESS, G0 IN_PROGRESS, Next CC-003; no Windows physical Win10/Win11 smoke, no A01–A18 PASS.
+
 ## 2026-10-22 — CC-003 implementation started, packaging CI verification pending
 
 - **Gate/task:** G0 / CC-003 IN_PROGRESS; Next task CC-003; CC-001/002 remain VERIFIED, CC-004/005 TODO, G1–G8 LOCKED, A01–A18 NOT_RUN. Owner explicitly authorized only CC-003.

@@ -20,7 +20,7 @@ The PySide6 Nuitka plugin is expected to package `QtWebEngineProcess.exe`, `Qt6W
 
 **Frontend build-only:** Node.js 24.22.0, npm 11.19.1; React/ReactDOM 19.3.1, Three.js 0.186.1, Vite 8.3.4, TypeScript 5.9.3; `frontend/package-lock.json` unchanged. `npm ci` builds only trusted static assets; Node/npm are never called at end-user runtime.
 
-**Additional build-only pinned dependencies** in `packaging/cc003-build-requirements.txt`: Nuitka 4.1.1, ordered-set 4.1.0, zstandard 0.25.0. These are not consumer requirements. Compiler/Windows runner image vary by hosted image; log exact environment. Pinning software versions does not imply byte-for-byte bit-reproducibility.
+**Additional build-only pinned dependencies** in `packaging/cc003-build-requirements.txt`: Nuitka 4.1.1, ordered-set 4.1.0, zstandard 0.25.0. These are not consumer requirements. Compiler/Windows runner image vary by hosted image; log exact environment. **Observed packaging blocker:** Actions [run #39709854048](https://github.com/giabao2605/Code-City/actions/runs/39709854048) succeeded on all 15 unit tests, Qt/frontend dependency installation, `pip check`, frontend typecheck/build and governance, but Nuitka failed before EXE generation because Dependency Walker was missing and the non-interactive prompt defaulted to No. Added `--assume-yes-for-downloads` to the **pinned Nuitka** invocation, allowing the pinned compiler to download its fixed `https://dependencywalker.com/depends22_x64.zip` build-time binary into Nuitka's cache. This is not an unpinned pip/npm package, but its byte hash has not been independently locked; this is an explicit reproducibility/supply-chain limitation for CC-003 pending a captured checksum. Never ship or download it at consumer runtime. [Nuitka caching documentation](https://nuitka.net/user-documentation/tips.html). Pinning software versions does not imply byte-for-byte bit-reproducibility.
 
 ## Resource resolution and trust
 
@@ -87,7 +87,7 @@ The bundled `--smoke-test` launches a real `QApplication` and `QWebEngineView`, 
 |---|---|---|
 | Source unit IPC/security/resources | NOT_RUN for CC-003 branch | Build job logs |
 | Frontend `npm ci`, typecheck, build | NOT_RUN for CC-003 branch | Build job logs |
-| Nuitka standalone .exe | UNVERIFIED | Real produced executable in Actions artifact |
+| Nuitka standalone .exe | UNVERIFIED (first retry failed on missing Dependency Walker; new retry pending) | Real produced executable in Actions artifact |
 | QtWebEngine helper/resources/manifest | UNVERIFIED | Structural manifest and relevant log |
 | Frozen WebEngine + React + QWebChannel | NOT_RUN | Consumer job packaged log with PASS marker |
 | Three pings/events, reload/restart, negative policy | NOT_RUN | Packaged stdout/stderr and exit codes |
