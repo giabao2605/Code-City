@@ -3,3 +3,10 @@ __pycache__/
 *.py[cod]
 frontend/node_modules/
 frontend/dist/
+
+# CC-003 Nuitka staging and final executable archives (never commit binaries)
+build/
+dist/
+*.dist/
+*.build/
+*.onefile-build/

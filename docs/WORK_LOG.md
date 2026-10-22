@@ -2,6 +2,16 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-22 — CC-003 implementation started, packaging CI verification pending
+
+- **Gate/task:** G0 / CC-003 IN_PROGRESS; Next task CC-003; CC-001/002 remain VERIFIED, CC-004/005 TODO, G1–G8 LOCKED, A01–A18 NOT_RUN. Owner explicitly authorized only CC-003.
+- **GitHub source of truth:** main `d1b93cd66eb44530f65fa0965509891c1773e47f` after merged PR #6; main branch ruleset active and required `plan-progress-consistency` operational. [Issue #7](https://github.com/giabao2605/Code-City/issues/7), `feature/CC-003-standalone-webengine-spike`. Previous WORK_LOG statements that PR #6 was unmerged are historical checkpoints.
+- **Code/scripts committed:** frozen `cc003_entry.py`, source/frozen `spike/resources.py`, source resource tests, standalone self-contained `spike/packaged_smoke.py`; pinned Nuitka 4.1.1, ordered-set 4.1.0, zstandard 0.25.0 build-only requirements; Windows PowerShell `cc003-build.ps1`, `cc003-verify-package.ps1`, `cc003-smoke.ps1`; `.github/workflows/cc003-standalone.yml` with independent build/consumer runners; `docs/CC003_PACKAGING.md`. Existing CC-002 network/IPC/CSP policies retained. No stack/architecture change or ADR; no CC-004/G1 implementation.
+- **Evidence status at entry creation:** automated build-trigger [workflow](https://github.com/giabao2605/Code-City/actions/workflows/cc003-standalone.yml) dispatched from branch push; real Windows packaging, resource layout, ZIP SHA256, frozen Qt UI and cross-runner smoke **NOT_YET_VERIFIED** pending full CI logs. Linux local environment cannot execute Windows EXE; no false PASS claim. Python/source unit and frontend typecheck on **CC-003 head** also pending CI.
+- **Expected cross-runner evidence:** independent Windows Server 2022 jobs, consumer no checkout/setup-python/setup-node, archived logs, explicit packaged smoke marker and exit codes. Hosted image may have Python/Node preinstalled; physical Win10/11 clean no-runtime and disconnected-Internet tests: NOT_RUN/UNVERIFIED. A14/A15 NOT_RUN, no V1 acceptance promoted.
+- **Governance:** required validator is invoked by build script and protected PR workflow; PASS on final PR head must be checked after last commit. Owner decides merge, agent must NOT merge. Rollback by reverting PR with no user data migration.
+- **Next:** inspect build and consumer job logs and fixes, update evidence/limits and PR body with actual outcomes. If clean runner check not proven, leave CC-003 IN_PROGRESS/BLOCKED, do not start CC-004.
+
 ## 2026-10-21 — CC-002 DoD verified on hosted Windows (PR unmerged)
 
 - **UTC date:** 2026-10-21, **gate/task:** G0 / CC-002 **VERIFIED** in integration spike scope. **Next task by plan:** CC-003 TODO / **NOT AUTHORIZED**; G0 remains IN_PROGRESS and G1+ LOCKED.
