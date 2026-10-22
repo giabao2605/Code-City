@@ -198,7 +198,7 @@ def read_probe(root: Path, relative: str, *,
     """
     if type(chunk_size) is not int or not (1 <= chunk_size <= 1024 * 1024):
         raise ValueError("chunk_size must be 1..1048576")
-    if type(max_bytes) is not int or max_bytes < 1:
+    if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("max_bytes must be a positive integer")
     trusted_root = validate_root(root)
     parts = relative_parts(relative)

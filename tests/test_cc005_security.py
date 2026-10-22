@@ -200,6 +200,12 @@ class WindowsProbeTests(unittest.TestCase):
         with self.assertRaises(UnsafePath):
             read_probe(self.root,"link.py")
 
+    def test_inward_file_symlink_not_followed(self):
+        link = self.root/"inward.py"
+        self._symlink(link,self.inside_file)
+        with self.assertRaises(UnsafePath):
+            read_probe(self.root,"inward.py")
+
     def test_nested_directory_symlink_not_followed(self):
         link = self.root/"linkdir"
         self._symlink(link,self.outside,directory=True)
@@ -211,6 +217,15 @@ class WindowsProbeTests(unittest.TestCase):
         self._junction(link,self.outside)
         with self.assertRaises(UnsafePath):
             read_probe(self.root,"junction/secret.py")
+
+    def test_inward_junction_not_followed(self):
+        folder = self.root/"inside-folder"
+        folder.mkdir()
+        (folder/"f.py").write_bytes(b"inside")
+        link = self.root/"inward-junction"
+        self._junction(link,folder)
+        with self.assertRaises(UnsafePath):
+            read_probe(self.root,"inward-junction/f.py")
 
     def test_prefix_confusion(self):
         peer = self.base/(self.root.name+"-copy")
