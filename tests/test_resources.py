@@ -22,13 +22,13 @@ class ResourceResolutionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             exe = Path(d) / "Thử nghiệm Unicode có dấu" / "CodeCitySpike.exe"
             self.assertEqual(frontend_dist(executable=exe, packaged=True),
-                             exe.parent / "frontend" / "dist")
+                             exe.resolve().parent / "frontend" / "dist")
 
     def test_no_silent_development_fallback(self):
         with tempfile.TemporaryDirectory() as d:
             exe = Path(d) / "CodeCitySpike.exe"
             dist = frontend_dist(executable=exe)
-            self.assertEqual(dist, exe.parent / "frontend" / "dist")
+            self.assertEqual(dist, exe.resolve().parent / "frontend" / "dist")
             self.assertFalse((dist / "index.html").exists())
 
 
