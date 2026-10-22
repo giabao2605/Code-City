@@ -1,0 +1,5 @@
+# CC-003 build-time ONLY; these must NOT be needed on the consumer Windows runner.
+# Nuitka version is the documented pyside6-deploy baseline at the inspection date.
+Nuitka==4.1.1
+ordered-set==4.1.0
+zstandard==0.25.0
