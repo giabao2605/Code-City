@@ -10,3 +10,6 @@ dist/
 *.dist/
 *.build/
 *.onefile-build/
+
+# CC-004 benchmark output is generated locally, never committed
+benchmarks/results/
