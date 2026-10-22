@@ -77,7 +77,7 @@ $bundle = 'C:\Path With Spaces\Extracted CC003'
 & "$bundle\CodeCitySpike\CodeCitySpike.exe"
 ```
 
-The smoke script launches the **actual packaged executable** twice, with a different current working directory, validates exit code AND the explicit real UI/IPC test PASS marker, checks for new orphan `QtWebEngineProcess` PIDs, and saves stdout/stderr logs. With `-NegativeTests`, it clones the installed folder into an independent Unicode/Vietnamese path, retests portability, then tests missing frontend and missing helper on **disposable copies only**.
+The smoke script launches the **actual packaged executable** twice, with a different current working directory, validates exit code AND the explicit real UI/IPC test PASS marker, checks for new orphan `QtWebEngineProcess` PIDs, and saves stdout/stderr logs. With `-NegativeTests`, it clones the installed folder into an independent Unicode/Vietnamese path, retests portability, then tests missing frontend, missing Qt WebEngine helper, and missing Chromium resource pack on **disposable copies only**.
 
 The bundled `--smoke-test` launches a real `QApplication` and `QWebEngineView`, confirms loaded trusted origin and React DOM mount, QWebChannel connected, unsolicited `app.ready`, three Ping/Pong pairs with matching request IDs and zero failures, invalid command rejected, CSP/HTTP(S)/WS(S)/file fetch denied (including zero accepted test-only loopback TCP), navigation/popup/download blocked, reload+new Python event+Ping working, and clean Qt lifecycle. CLI test flags have no extra QWebChannel permissions. **Never set production `--no-sandbox` or `--disable-web-security`.**
 
@@ -87,11 +87,11 @@ The bundled `--smoke-test` launches a real `QApplication` and `QWebEngineView`, 
 |---|---|---|
 | Source unit IPC/security/resources | NOT_RUN for CC-003 branch | Build job logs |
 | Frontend `npm ci`, typecheck, build | NOT_RUN for CC-003 branch | Build job logs |
-| Nuitka standalone .exe | UNVERIFIED (first retry failed on missing Dependency Walker; new retry pending) | Real produced executable in Actions artifact |
+| Nuitka standalone .exe | BUILD/STRUCTURE PASS on [run #39710283408](https://github.com/giabao2605/Code-City/actions/runs/39710283408), packaged runtime UNVERIFIED | Real produced executable in Actions artifact |
 | QtWebEngine helper/resources/manifest | UNVERIFIED | Structural manifest and relevant log |
 | Frozen WebEngine + React + QWebChannel | NOT_RUN | Consumer job packaged log with PASS marker |
 | Three pings/events, reload/restart, negative policy | NOT_RUN | Packaged stdout/stderr and exit codes |
-| Separate runner portability | NOT_RUN | Two distinct hosted job IDs/runner details |
+| Separate runner portability | PARTIAL: [run #39710283408](https://github.com/giabao2605/Code-City/actions/runs/39710283408) ZIP downloaded to a different runner, SHA256/structure PASS; a CI PowerShell stale `$LASTEXITCODE` guard aborted before launching EXE | Two distinct hosted job IDs/runner details |
 | Runtime no developer Node/npm invocation | UNVERIFIED | No consumer-side installation, frozen process logs |
 | Truly clean Windows with neither Python nor Node | UNVERIFIED | Independent VM/physical system inventory |
 | Physical Windows 10 1809+ | NOT_RUN | Target OS smoke outside hosted Server 2022 |

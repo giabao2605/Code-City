@@ -2,6 +2,13 @@
 
 > **Append-only.** Thêm entry mới ở đầu danh sách, không sửa/xóa lịch sử để che lỗi. Mỗi entry cần ngày UTC, CC task/gate, hành động thực tế, bằng chứng commit/PR, kiểm thử đã chạy/chưa chạy, blockers, next task. Khi thay đổi một entry cũ để sửa lỗi thông tin, thêm ghi chú correction có ngày.
 
+## 2026-10-22 — CC-003 actual Nuitka Windows artifact built; consumer workflow guard false failure
+
+- **Build evidence:** [run #39710283408](https://github.com/giabao2605/Code-City/actions/runs/39710283408) build job SUCCESS: actual `CodeCitySpike.exe` 5,689,856 bytes, structural PASS 452 bundled files, QtWebEngineProcess.exe, qt6webenginecore.dll, qwindows.dll, 53 locale packs, Vite assets, ZIP/checksum/manifest. ZIP SHA256 `225bcaf6ce860d67a116d28b2aa01f591584e80dd1aa6b1e3d91696792161fe7`; [artifact](https://github.com/giabao2605/Code-City/actions/runs/39710283408/artifacts/12396354969). Python 8 protocol + 4 security + 3 resources tests, frontend Vite build, governance PASS.
+- **Separate-runner evidence:** consumer Windows Server 2022 `GitHub Actions 1000001021` downloaded artifact with no checkout or Python/Node setup, verified matching ZIP SHA-256, structure PASS (453 files including manifest). It incorrectly failed **before executing EXE** because a shell wrapper inspected stale `$LASTEXITCODE` after a successful PowerShell verifier. No UI/IPC runtime PASS claimed. Build and smoke are separate hosted runners; physical clean Win10/11 still NOT_RUN.
+- **Corrective action:** remove `$LASTEXITCODE` checks after PowerShell scripts (they throw on failure), keep exit code assertions inside the frozen-executable smoke. Add missing WebEngine resource pack negative on disposable clone. Next CI run must prove real packed Windows execution before status VERIFIED. G0/CC003 remain IN_PROGRESS.
+- **Previous failed attempt:** [run #39709854048](https://github.com/giabao2605/Code-City/actions/runs/39709854048) failed at noninteractive Dependency Walker prompt, addressed by Nuitka build-time flag.
+
 ## 2026-10-22 — CC-003 failed Nuitka tool bootstrap, explicit build-time dependency fix
 
 - **Observed failure:** [CC-003 PR build #39709854048](https://github.com/giabao2605/Code-City/actions/runs/39709854048) FAIL on real hosted Windows Server 2022: CPython 3.12.10 x64, Qt dependencies, pinned Nuitka 4.1.1, MSVC cl14.3, npm ci/typecheck/Vite build PASS; 8 protocol, 4 security and 3 resource tests PASS; local governance PASS. Nuitka recognized PySide6 Qt WebEngine and logged that it would include QtWebEngineProcess; no standalone output produced because Windows Dependency Walker missing and a non-interactive permission prompt defaulted to No. Consumer job SKIPPED, no cross-runner evidence.

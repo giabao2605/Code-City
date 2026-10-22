@@ -69,7 +69,7 @@ try {
     $destination = Join-Path $staging 'CodeCitySpike'
     Copy-Item -LiteralPath $dists[0].FullName -Destination $destination -Recurse -Force
     & (Join-Path $PSScriptRoot 'cc003-verify-package.ps1') -PackageDir $destination -WriteManifest
-    if ($LASTEXITCODE -ne 0) { throw 'Structural verification failed' }
+    # This is a PowerShell script; its explicit throw is the failure channel, not $LASTEXITCODE.
     $tools = Join-Path $staging 'tools'
     New-Item -ItemType Directory -Path $tools -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'cc003-verify-package.ps1') -Destination $tools

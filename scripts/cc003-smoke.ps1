@@ -64,5 +64,13 @@ if ($NegativeTests) {
         $helpers | Remove-Item -Force
         Invoke-Check -Directory $probe2 -Label 'missing-helper' -ExpectSuccess $false
     } finally { if (Test-Path $probe2) { Remove-Item -LiteralPath $probe2 -Recurse -Force } }
+    $probe3 = Join-Path ([IO.Path]::GetTempPath()) ('CC003 missing WebEngine resources ' + [guid]::NewGuid().ToString('N'))
+    try {
+        Copy-Item -LiteralPath $root -Destination $probe3 -Recurse -Force
+        $packs = @(Get-ChildItem -LiteralPath $probe3 -Recurse -File -Filter 'qtwebengine_resources.pak')
+        if ($packs.Count -eq 0) { throw 'Expected packaged resources for destructive negative test' }
+        $packs | Remove-Item -Force
+        Invoke-Check -Directory $probe3 -Label 'missing-webengine-resource' -ExpectSuccess $false
+    } finally { if (Test-Path $probe3) { Remove-Item -LiteralPath $probe3 -Recurse -Force } }
 }
 Write-Host "CC003_ALL_PACKAGED_SMOKE=PASS"

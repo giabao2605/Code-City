@@ -119,7 +119,7 @@ jobs:
           $unpack = Join-Path $env:RUNNER_TEMP 'CC003 consumer independently extracted'
           Expand-Archive -LiteralPath $zip -DestinationPath $unpack -Force
           & (Join-Path $unpack 'tools\cc003-verify-package.ps1') -PackageDir (Join-Path $unpack 'CodeCitySpike')
-          if ($LASTEXITCODE -ne 0) { throw 'Extracted structural verification failed' }
+          # PowerShell scripts throw on failures; $LASTEXITCODE here can be stale from a prior native process.
           "extracted=$unpack" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
       - name: Run actual packaged Chromium, React, WebChannel, network-policy and relocation smoke
         shell: pwsh
@@ -127,7 +127,7 @@ jobs:
         run: |
           $unpack = "${{ steps.extract.outputs.extracted }}"
           & (Join-Path $unpack 'tools\cc003-smoke.ps1') -PackageDir (Join-Path $unpack 'CodeCitySpike') -TimeoutSeconds 110 -NegativeTests
-          if ($LASTEXITCODE -ne 0) { throw 'Packaged smoke script failed' }
+          # cc003-smoke.ps1 throws on FAIL; do not consult stale $LASTEXITCODE.
       - name: Upload consumer smoke logs regardless of outcome
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
