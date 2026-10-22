@@ -10,16 +10,16 @@
 - **Phase:** `IN_DEVELOPMENT`
 - **Current gate:** `G0`
 - **Next task:** `CC-003`
-- **Updated (UTC):** `2026-10-21`
-- **Authorization:** `G0_CC-002_APPROVED` (chủ dự án đã cấp quyền riêng và CC-002 đã được triển khai; CC-003 trở đi chưa được cấp quyền triển khai).
-- **Ghi chú:** CC-001 VERIFIED/merged. CC-002 VERIFIED trong phạm vi spike nhờ Qt WebEngine + QWebChannel thực chạy trên hosted Windows Server 2022, 6 integration tests, protocol/security unit, static Vite build và governance CI PASS ([run #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051)). PR #6 là bằng chứng code/test; xác minh trạng thái merge trực tiếp trên GitHub. CC-003 là task tiếp theo nhưng chưa được cấp quyền. Chưa có standalone exe/benchmark hoặc physical Windows 10/11 GUI smoke.
+- **Updated (UTC):** `2026-10-22`
+- **Authorization:** `G0_CC-003_APPROVED` (chủ dự án đã cấp quyền riêng và CC-002 đã được triển khai; CC-003 trở đi chưa được cấp quyền triển khai).
+- **Ghi chú:** CC-001 VERIFIED/merged. CC-002 VERIFIED trong phạm vi spike nhờ Qt WebEngine + QWebChannel thực chạy trên hosted Windows Server 2022, 6 integration tests, protocol/security unit, static Vite build và governance CI PASS ([run #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051)). PR #6 là bằng chứng code/test; xác minh trạng thái merge trực tiếp trên GitHub. CC-003 đã được chủ dự án cấp quyền riêng ngày 2026-10-22, đang triển khai trên feature branch; chưa có bằng chứng đóng gói/cross-machine PASS. Chưa có standalone exe/benchmark hoặc physical Windows 10/11 GUI smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
 
 | Gate | Trạng thái | Exit evidence | Ghi chú |
 |---|---|---|---|
-| G0 | IN_PROGRESS | - | CC-001, CC-002 VERIFIED theo đúng DoD từng task; CC-003 đến CC-005 vẫn TODO/chưa cấp phép; G0 chưa đạt exit gate |
+| G0 | IN_PROGRESS | - | CC-001, CC-002 VERIFIED theo đúng DoD từng task; CC-003 IN_PROGRESS; CC-004/005 vẫn TODO/chưa cấp phép; G0 chưa đạt exit gate |
 | G1 | LOCKED | - | Desktop shell + scanner (10% + 20%); chưa mở gate |
 | G2 | LOCKED | - | Persistence + snapshots (15%); chưa mở gate |
 | G3 | LOCKED | - | Layout ổn định + city data contract (12% trong nhóm layout/renderer); chưa mở gate |
@@ -37,7 +37,7 @@
 |---|---|---|---|---|---|
 | CC-001 | G0 | Chốt Python 3.12, PySide6/Qt 6.12.x, Node LTS, React, Three.js, Vite, TypeScript exact versions; tạo lockfiles và dependency matrix. | VERIFIED | https://github.com/giabao2605/Code-City/pull/2 | DoD dependency: Windows Server 2022 Python/Qt imports, pip check, npm ci from committed lock, npm ls, toolchain PASS; governance CI PASS; chủ dự án cho phép merge; physical Windows smoke là task G0/G7 sau |
 | CC-002 | G0 | Spike Qt WebEngine tải static Vite assets + QWebChannel ping/pong trên Windows; chặn navigation/network trong production mode. | VERIFIED | https://github.com/giabao2605/Code-City/pull/6 | Windows Server 2022 WebEngine thật, React Vite static, QWebChannel ping/pong + Python signal, 6 integration + 8 protocol + 4 URL-policy tests PASS; download/loopback negative PASS, CI #39578515051; physical Win10/11 NOT_RUN (không phải CC-002 standalone acceptance) |
-| CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | TODO | - | Chưa bắt đầu |
+| CC-003 | G0 | Spike standalone build tối thiểu có QtWebEngineProcess/resources; chạy trên máy Windows khác máy build. | IN_PROGRESS | https://github.com/giabao2605/Code-City/issues/7 | Được phép thực hiện, đang triển khai Nuitka standalone và kiểm thử trên runner độc lập; chưa VERIFIED |
 | CC-004 | G0 | Tạo fixture generator 500/1k/5k/10k files; ghi rõ CPU/GPU/RAM/SSD/resolution/Windows của máy benchmark. | TODO | - | Chưa bắt đầu |
 | CC-005 | G0 | Chốt chiến lược path containment/TOCTOU trên Windows, file limits và scan error semantics qua test nhỏ; viết ADR nếu đổi quyết định. | TODO | - | Chưa bắt đầu |
 | CC-010 | G1 | Python project CLI entrypoint, PySide main window, Qt resources, native picker, thread-safe bridge, basic React shell. | TODO | - | Chưa bắt đầu |
@@ -109,7 +109,7 @@
 ## 5. Blockers và rủi ro mở
 
 - **CC-002 spike đã VERIFIED trên hosted Windows Server 2022:** không đồng nghĩa kiểm thử physical Windows 10/11 GUI/GPU hay ứng dụng V1 offline hoàn chỉnh. Giới hạn: network isolation không chứng minh mọi loại Chromium traffic/OS-level bypass; rủi ro packaging, GPU, license và TOCTOU còn cho các gate/task sau.
-- **Điều kiện bắt đầu task tiếp:** CC-002 có PR #6, trạng thái merge phải xác minh trên GitHub. CC-003 vẫn TODO và chưa được cấp quyền triển khai trong tài liệu hiện tại; lệnh cấp quyền mới của chủ dự án có thể thay đổi điều này. Không nhầm Next task với authorization.
+- **Điều kiện bắt đầu task tiếp:** CC-002 có PR #6, trạng thái merge phải xác minh trên GitHub. CC-003 IN_PROGRESS theo quyền cấp ngày 2026-10-22; vẫn phải xác minh artifact/runtime/cross-runner CI trước khi VERIFIED. Không nhầm Next task với authorization.
 - **Thay đổi kiến trúc hoặc scope:** phải có ADR, cập nhật Master Plan (version mới), cập nhật PROGRESS và ghi WORK_LOG trước khi code theo quyết định mới.
 
 ## 6. Checklist mỗi lần bắt đầu / kết thúc phiên làm việc
