@@ -11,8 +11,8 @@
 - **Current gate:** `G0`
 - **Next task:** `CC-003`
 - **Updated (UTC):** `2026-10-21`
-- **Authorization:** `G0_CC-002_APPROVED` (chủ dự án đã gửi prompt cấp phép thực hiện riêng CC-002 trong phiên triển khai mới ngày 2026-10-21; CC-002 chưa bắt đầu code; CC-003 trở đi chưa được cấp phép).
-- **Ghi chú:** CC-001 VERIFIED/merged. CC-002 VERIFIED trong phạm vi spike nhờ Qt WebEngine + QWebChannel thực chạy trên hosted Windows Server 2022, 6 integration tests, protocol/security unit, static Vite build và governance CI PASS ([run #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051)). PR #6 chưa merge; CC-003 là task tiếp theo nhưng chưa được cấp quyền. Chưa có standalone exe/benchmark hoặc physical Windows 10/11 GUI smoke.
+- **Authorization:** `G0_CC-002_APPROVED` (chủ dự án đã cấp quyền riêng và CC-002 đã được triển khai; CC-003 trở đi chưa được cấp quyền triển khai).
+- **Ghi chú:** CC-001 VERIFIED/merged. CC-002 VERIFIED trong phạm vi spike nhờ Qt WebEngine + QWebChannel thực chạy trên hosted Windows Server 2022, 6 integration tests, protocol/security unit, static Vite build và governance CI PASS ([run #39578515051](https://github.com/giabao2605/Code-City/actions/runs/39578515051)). PR #6 là bằng chứng code/test; xác minh trạng thái merge trực tiếp trên GitHub. CC-003 là task tiếp theo nhưng chưa được cấp quyền. Chưa có standalone exe/benchmark hoặc physical Windows 10/11 GUI smoke.
 - **Bằng chứng trạng thái:** [Master Plan](MASTER_PLAN.md); [Nhật ký làm việc](docs/WORK_LOG.md); [Governance CI đã chạy thành công](https://github.com/giabao2605/Code-City/actions/runs/39551417792) (run đầu, không phải test ứng dụng).
 
 ## 2. Gate tracker
@@ -109,7 +109,7 @@
 ## 5. Blockers và rủi ro mở
 
 - **CC-002 spike đã VERIFIED trên hosted Windows Server 2022:** không đồng nghĩa kiểm thử physical Windows 10/11 GUI/GPU hay ứng dụng V1 offline hoàn chỉnh. Giới hạn: network isolation không chứng minh mọi loại Chromium traffic/OS-level bypass; rủi ro packaging, GPU, license và TOCTOU còn cho các gate/task sau.
-- **Điều kiện bắt đầu task tiếp:** CC-002 có PR #6 chưa merge; chủ dự án phải review và quyết định merge riêng. CC-003 vẫn TODO, chưa được cấp quyền triển khai. Không nhầm Next task với authorization.
+- **Điều kiện bắt đầu task tiếp:** CC-002 có PR #6, trạng thái merge phải xác minh trên GitHub. CC-003 vẫn TODO và chưa được cấp quyền triển khai trong tài liệu hiện tại; lệnh cấp quyền mới của chủ dự án có thể thay đổi điều này. Không nhầm Next task với authorization.
 - **Thay đổi kiến trúc hoặc scope:** phải có ADR, cập nhật Master Plan (version mới), cập nhật PROGRESS và ghi WORK_LOG trước khi code theo quyết định mới.
 
 ## 6. Checklist mỗi lần bắt đầu / kết thúc phiên làm việc
