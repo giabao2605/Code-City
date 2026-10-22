@@ -177,3 +177,18 @@
 - **DoD:** CC-004 fixture generator/environment baseline VERIFIED within task scope. WebGL 100-box feasibility NOT_RUN, physical Win10/11 not tested, A01–A18 all NOT_RUN. G0 remains IN_PROGRESS, CC-005 TODO/unauthorized, G1–G8 LOCKED.
 - **Next:** recheck CI/governance on evidence-documentation commit, owner review/merge PR #10 only when final checks green; no autonomous merge or CC-005 implementation.
 
+
+## 2026-10-22 — CC-005 Windows path security spike initiated
+
+- **Authorization / DoR:** owner explicitly authorized CC-005; main checkpoint `5fecda0b9f53c297d33042e664a644502f1f084f`, PR #10 merged, main ruleset required governance active, CC-001–004 VERIFIED. Issue [#11](https://github.com/giabao2605/Code-City/issues/11); branch `feature/CC-005-windows-path-security-spike`. G0 IN_PROGRESS and G1–G8 LOCKED.
+- **Implementation in branch:** isolated Python stdlib+ctypes Win32 path containment/open-handle proof-of-concept, unsupported remote root and reparse policy, deterministic race hooks, resource quotas and pure outcome contract. Tests cover links, prefix confusion, Unicode/casefold, count/size boundaries, snapshot eligibility, no execution and no network. No product scanner/SQLite/renderer.
+- **Evidence state at entry:** Windows workflow has been added, but actual security tests and Windows host results must be checked before claims of PASS/VERIFIED. Symlink privileges and remote mapping are conditional. Unbounded attacker TOCTOU and 100 genuine WebGL boxes are not proven; A01–A18 all NOT_RUN.
+- **Next:** run and inspect Windows CI logs, fix actual bugs, update final risk evidence and PR. No merge; no G1.
+
+## 2026-10-22 — CC-005 Windows security results and review handoff
+
+- **GitHub:** [Issue #11](https://github.com/giabao2605/Code-City/issues/11); branch `feature/CC-005-windows-path-security-spike`; [Draft PR #12](https://github.com/giabao2605/Code-City/pull/12), no merge. Master Plan 1.0.1 unchanged; security strategy is hybrid implementation detail, no ADR because security/contract baseline unchanged.
+- **Actual Windows tests:** [PR-head run #39718758968 SUCCESS](https://github.com/giabao2605/Code-City/actions/runs/39718758968) at `9b54ab1a9ca30c95cb6ec7fa837a9f6098ad6801`: Python 3.12.10 x64, 31 security tests = 30 PASS + 1 SKIP (no mapped remote drives on host), CC-004 regression 24/24 PASS, governance PASS. Symlink/junction inward/outward, deterministic substitution, file grow/truncate during opened-handle streaming, 20k logical quota and actual sparse 64 MiB inclusive boundary tested. Hosted Windows Server 2022; physical Win10/11 NOT_RUN.
+- **Decision:** fail-closed hybrid path preflight + `CreateFileW`/`GetFinalPathNameByHandleW`/`GetFileInformationByHandle`/`ReadFile` target validation, strict local drive, refusing links/reparse, bounded chunk/quotas, pure COMPLETE-only commit eligibility. Explicit residuals: no atomic ancestor walk, no universal adversarial TOCTOU assurance. No production scanner/SQLite/renderer, no source execution/network access.
+- **Remaining issues:** actual mapped network drive NOT_RUN/SKIP, physical Windows GUI/security edge cases NOT_RUN, true WebGL 100-box exit requirement NOT_RUN. A01–A18 all NOT_RUN. `PROGRESS` CC-005 stays IN_PROGRESS during owner PR review; governance validator requires Next task to be unfinished in Current gate, so it cannot mark CC-005 VERIFIED and advance Next task to CC-010 while G0 exit evidence is missing. Do not weaken governance or unlock G1 automatically.
+- **Next:** owner review security PR, decide minimal isolated real WebGL 100-box G0 exit probe or separate approved follow-up; verify PR required checks on final documentation head. Do not merge/G1 without authorization.

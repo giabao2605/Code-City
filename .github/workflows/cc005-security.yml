@@ -1,0 +1,60 @@
+name: CC-005 Windows filesystem security
+on:
+  push:
+    branches:
+      - feature/CC-005-windows-path-security-spike
+  pull_request:
+    paths:
+      - "security_spike/**"
+      - "tests/test_cc005_security.py"
+      - ".github/workflows/cc005-security.yml"
+      - "docs/CC005_WINDOWS_SECURITY.md"
+      - "PROGRESS.md"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: cc005-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cc005-windows-security:
+    runs-on: windows-2022
+    timeout-minutes: 35
+    steps:
+      - name: Checkout immutable PR head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Setup Python 3.12.10 x64
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - name: Security probes and CC-004 regression
+        shell: pwsh
+        run: |
+          $out=Join-Path $env:RUNNER_TEMP 'cc005-evidence'
+          New-Item -ItemType Directory -Path $out -Force | Out-Null
+          python -c "import sys,struct; assert sys.version_info[:3] == (3,12,10); assert struct.calcsize('P') == 8"
+          python -m unittest discover -s tests -p test_cc005_security.py -v 2>&1 | Tee-Object -FilePath (Join-Path $out 'cc005-security-tests.txt')
+          if($LASTEXITCODE -ne 0){throw 'CC005 security tests failed'}
+          python -m unittest discover -s tests -p test_fixture_generator.py -v 2>&1 | Tee-Object -FilePath (Join-Path $out 'cc004-regression-tests.txt')
+          if($LASTEXITCODE -ne 0){throw 'CC004 regression failed'}
+      - name: Capture Windows host and governance
+        shell: pwsh
+        run: |
+          $out=Join-Path $env:RUNNER_TEMP 'cc005-evidence'
+          & .\benchmarks\capture_environment.ps1 -FixtureRoot $env:RUNNER_TEMP -OutputDir $out
+          node scripts/verify_governance.mjs 2>&1 | Tee-Object -FilePath (Join-Path $out 'governance.txt')
+          if($LASTEXITCODE -ne 0){throw 'Governance failed'}
+      - name: Upload actual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: cc005-windows-security-evidence
+          path: ${{ runner.temp }}/cc005-evidence/**
+          if-no-files-found: warn
+          retention-days: 14
