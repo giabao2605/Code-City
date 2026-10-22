@@ -159,3 +159,12 @@
 - **Bằng chứng:** xem Git history của các file governance (commit cụ thể ghi trong GitHub; không giả định CI đã xanh).
 - **Blocker:** cần người dùng cho phép bắt đầu G0 trước khi viết code ứng dụng.
 - **Next:** G0 / CC-001, xác minh toolchain và lock versions theo Master Plan.
+
+## 2026-10-22 — CC-004 deterministic fixtures / benchmark baseline opened
+
+- **DoR and authorization:** owner explicitly approved G0/CC-004 implementation; main 4d14b1176336d28ad7a72198a3fb6c8aaab22f85, PR #8 merged, CC-001/002/003 VERIFIED; G0 IN_PROGRESS, CC-005 TODO, G1–G8 LOCKED. Required governance and ruleset active.
+- **GitHub:** Issue #9 https://github.com/giabao2605/Code-City/issues/9; branch feature/CC-004-fixture-benchmark-baseline from main; no direct main commits and no auto-merge.
+- **Code:** Python stdlib deterministic synthetic fixture generator and independent full-disk SHA-256 verifier, 17 extensions, 9 ignored decoys, mixed/tiny/deep/large, seed, explicit disk budget, ownership marker and fail-closed cleanup; 24 unittest cases; Windows environment PowerShell capture, wrapper commands and CI 500/1k/5k/10k matrix.
+- **Evidence checkpoint:** code committed; Windows CI results and hardware observations must be checked and linked before calling VERIFIED. At entry creation no actual Windows fixture count, timing, GPU/SSD or display benchmark is asserted. Unit and governance PASS require final test logs.
+- **Risks:** hosted GPU/SSD/physicality UNVERIFIED; WebGL genuine 100 boxes NOT_RUN; adversarial Windows reparse-point TOCTOU reserved for CC-005. A01–A18 NOT_RUN. No scanner, SQLite, product renderer, release or G1 task implemented.
+- **Next:** open PR, inspect Windows Actions logs/artifacts, fix identified defects, sync final DoD evidence, and obtain owner review. Do not merge or start CC-005.
