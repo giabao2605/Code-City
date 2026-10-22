@@ -1,0 +1,138 @@
+name: CC-003 Windows standalone build and isolated runner smoke
+
+on:
+  push:
+    branches:
+      - feature/CC-003-standalone-webengine-spike
+  pull_request:
+    paths:
+      - "spike/**"
+      - "cc003_entry.py"
+      - "tests/**"
+      - "frontend/**"
+      - "packaging/**"
+      - "scripts/cc003-*.ps1"
+      - ".github/workflows/cc003-standalone.yml"
+      - "PROGRESS.md"
+      - "README.md"
+  workflow_dispatch:
+
+concurrency:
+  group: cc003-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows-standalone:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - name: Checkout fresh source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install Python 3.12.10 x64
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12.10"
+          architecture: x64
+      - name: Install Node 24.22.0 (build only)
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24.22.0"
+      - name: Record Windows build-runner and compiler environment
+        shell: pwsh
+        run: |
+          Write-Host "BUILD_RUNNER_NAME=$env:RUNNER_NAME"
+          Write-Host "BUILD_RUNNER_OS=$env:RUNNER_OS"
+          Write-Host "BUILD_IMAGE_VERSION=$env:ImageVersion"
+          Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber | Format-List
+          Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory | Format-List
+          python --version
+          node --version
+          npm --version
+          Get-Command cl.exe -ErrorAction SilentlyContinue | Format-List Source
+      - name: Build pinned Nuitka standalone distribution and verify artifacts
+        shell: pwsh
+        timeout-minutes: 80
+        run: |
+          & .\scripts\cc003-build.ps1 -PythonCommand python
+          if ($LASTEXITCODE -ne 0) { throw "CC-003 build script failed" }
+      - name: Publish packaging artifact (separate runner consumes ZIP)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: CC003-Windows-Standalone
+          path: |
+            dist/cc003/CodeCitySpike.zip
+            dist/cc003/CodeCitySpike.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload compile diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: CC003-build-diagnostics
+          path: build/cc003/nuitka-report.xml
+          if-no-files-found: warn
+      - name: Governance consistency on build source
+        shell: pwsh
+        run: node scripts/verify_governance.mjs
+
+  smoke-on-separate-windows-runner:
+    needs: build-windows-standalone
+    runs-on: windows-2022
+    timeout-minutes: 25
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QTWEBENGINE_CHROMIUM_FLAGS: --disable-gpu
+    steps:
+      # Intentionally NO checkout and NO setup-python/setup-node. Windows hosted
+      # runner image may still preinstall them: this is portability evidence,
+      # not proof of a physically clean Windows 10/11 machine.
+      - name: Record independent Windows consumer environment
+        shell: pwsh
+        run: |
+          Write-Host "SMOKE_RUNNER_NAME=$env:RUNNER_NAME"
+          Write-Host "SMOKE_RUNNER_OS=$env:RUNNER_OS"
+          Write-Host "SMOKE_IMAGE_VERSION=$env:ImageVersion"
+          Get-CimInstance Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber | Format-List
+          Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory | Format-List
+          Write-Host "NO_SOURCE_CHECKOUT=TRUE; NO_RUNTIME_SETUP=TRUE"
+          Write-Host "Python and Node may still be installed on hosted runner image; NOT CLEAN OS proof"
+      - name: Download only the packaged artifact from independent build runner
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: CC003-Windows-Standalone
+          path: incoming
+      - name: Verify SHA-256 ZIP, extract to independent location, verify Qt resources
+        id: extract
+        shell: pwsh
+        run: |
+          $zip = (Resolve-Path '.\incoming\CodeCitySpike.zip').Path
+          $sumFile = Get-Content '.\incoming\CodeCitySpike.sha256' -Raw
+          $expected = ($sumFile.Trim() -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "ZIP checksum mismatch" }
+          Write-Host "CC003_ZIP_SHA256=$actual"
+          $unpack = Join-Path $env:RUNNER_TEMP 'CC003 consumer independently extracted'
+          Expand-Archive -LiteralPath $zip -DestinationPath $unpack -Force
+          & (Join-Path $unpack 'tools\cc003-verify-package.ps1') -PackageDir (Join-Path $unpack 'CodeCitySpike')
+          if ($LASTEXITCODE -ne 0) { throw 'Extracted structural verification failed' }
+          "extracted=$unpack" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+      - name: Run actual packaged Chromium, React, WebChannel, network-policy and relocation smoke
+        shell: pwsh
+        timeout-minutes: 19
+        run: |
+          $unpack = "${{ steps.extract.outputs.extracted }}"
+          & (Join-Path $unpack 'tools\cc003-smoke.ps1') -PackageDir (Join-Path $unpack 'CodeCitySpike') -TimeoutSeconds 110 -NegativeTests
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged smoke script failed' }
+      - name: Upload consumer smoke logs regardless of outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: CC003-consumer-smoke-logs
+          path: ${{ runner.temp }}/CC003 consumer independently extracted/smoke-logs/*.log
+          if-no-files-found: warn
+          retention-days: 14
